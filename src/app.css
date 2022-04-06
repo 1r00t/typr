@@ -1,0 +1,31 @@
+@import 'fonts.css';
+
+:root {
+  --theme-black: #001219;
+  --theme-white: #e9d8a6;
+  --theme-blue-100: #94d2bd;
+  --theme-blue-200: #0a9396;
+  --theme-blue-300: #005f73;
+  --theme-orange-100:#ee9b00;
+  --theme-orange-200: #ca6702;
+  --theme-red-100:#bb3e03;
+  --theme-red-200: #ae2012;
+  --theme-red-300: #9b2226;
+
+  --header-height: 9rem;
+
+}
+
+html * {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+
+}
+
+body {
+	min-height: 100vh;
+  background-color: var(--theme-black);
+  color: var(--theme-white);
+}
