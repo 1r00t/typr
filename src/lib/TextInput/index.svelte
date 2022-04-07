@@ -32,6 +32,10 @@
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import { Refresh } from '@steeze-ui/heroicons';
 	import { flip } from 'svelte/animate';
+	import { fly } from 'svelte/transition';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	let activeSentence: number = 0;
 	let activeWord: number = 0;
@@ -39,10 +43,12 @@
 
 	let inputElement: HTMLInputElement;
 	let sentencesElement: HTMLDivElement;
-	let currentElement;
+	let currentElement: HTMLDivElement;
 	let caretElement: HTMLDivElement;
 	let outOfFocusElement: HTMLDivElement;
-	let testLengthElement: HTMLDivElement;
+	// let testLengthElement: HTMLDivElement;
+
+	let running: boolean = false;
 
 	let inputValue: string = '';
 
@@ -67,9 +73,7 @@
 		}
 		if (activeSentence === 2) {
 			// remove top sentence and add bottom sentence
-			$sentences.shift();
-			$sentences.push(getRandomWords(10));
-			$sentences = $sentences;
+			$sentences = [$sentences[1], $sentences[2], getRandomWords(10)];
 			activeSentence = 1;
 		}
 	}
@@ -101,8 +105,9 @@
 	}
 
 	function setCurrentElement() {
-		currentElement =
-			sentencesElement.children[activeSentence].children[activeWord].children[activeLetter];
+		currentElement = sentencesElement.children[activeSentence].children[activeWord].children[
+			activeLetter
+		] as HTMLDivElement;
 	}
 
 	function clearClasses() {
@@ -125,6 +130,10 @@
 	}
 
 	function letterTyped() {
+		if (!running) {
+			running = true;
+			dispatch('start');
+		}
 		setCurrentElement();
 		evaluateInput();
 		setNextCharacter();
@@ -134,15 +143,21 @@
 	}
 
 	function reset() {
-		$sentences = [[]];
+		if (running) {
+			running = false;
+			dispatch('reset');
+		}
 		$sentences = makeSentences();
 		inputElement.focus();
-		clearClasses();
 		activeSentence = 0;
 		activeWord = 0;
 		activeLetter = 0;
 		setCurrentElement();
 		setCaret();
+	}
+
+	export function timeUp() {
+		reset();
 	}
 
 	onMount(() => {
@@ -181,13 +196,18 @@
 	/>
 
 	<!-- hidden test length div (https://stackoverflow.com/a/118251) -->
-	<div id="test-length" bind:this={testLengthElement} />
+	<!-- <div id="test-length" bind:this={testLengthElement} /> -->
 
 	<!-- typing area -->
 	<div class="sentences-container">
 		<div class="sentences" bind:this={sentencesElement}>
 			{#each $sentences as sentence (sentence)}
-				<div class="sentence" animate:flip={{ duration: 100 }}>
+				<div
+					class="sentence"
+					out:fly={{ y: -20, duration: 100 }}
+					in:fly={{ y: 20, duration: 100 }}
+					animate:flip={{ duration: 100 }}
+				>
 					{#each sentence as word}
 						<span class="word">
 							{#each word as letter}
@@ -222,7 +242,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		width: 100%;
 	}
 	.button-refresh {
 		cursor: pointer;
@@ -318,11 +338,11 @@
 		opacity: 1;
 		transition: opacity 1000ms ease;
 	}
-	#test-length {
+	/* #test-length {
 		position: absolute;
 		visibility: hidden;
 		height: auto;
 		width: auto;
 		white-space: nowrap;
-	}
+	} */
 </style>
