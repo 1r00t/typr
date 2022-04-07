@@ -15,7 +15,7 @@
 </svelte:head>
 
 <section class="timer">
-	<Timer bind:this={timer} countDown={120} on:finish={textInput.timeUp} />
+	<Timer bind:this={timer} countDown={30} on:finish={textInput.timeUp} />
 </section>
 
 <section class="text-input">

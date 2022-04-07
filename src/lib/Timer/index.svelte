@@ -6,7 +6,7 @@
 
 	const timer = new Timer();
 	let interval: NodeJS.Timer;
-	export let countDown: number = 120;
+	export let countDown: number = 30;
 	let currentCountDown: number = countDown;
 
 	export function start(): any {
@@ -22,6 +22,8 @@
 			}
 		}, 100);
 	}
+
+	// TODO: there is a bug when resetting the timer with a countDown than the initial.
 
 	export function reset(): any {
 		console.log('reset');
