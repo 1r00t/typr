@@ -49,6 +49,11 @@
 	{#if !$running && $elapsedTime === 0}
 		<div class="seconds" transition:fade>
 			<button
+				class:active={countDown === 15}
+				on:click|preventDefault={() => setCountDown(15)}
+				on:mousedown|preventDefault>15</button
+			>
+			<button
 				class:active={countDown === 30}
 				on:click|preventDefault={() => setCountDown(30)}
 				on:mousedown|preventDefault>30</button
