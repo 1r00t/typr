@@ -30,6 +30,7 @@
 		if (timer.isRunning) {
 			timer.reset();
 		}
+		elapsedTime.set(0);
 		clearInterval(interval);
 		currentCountDown = countDown;
 		console.log(currentCountDown, countDown);
@@ -44,13 +45,29 @@
 </script>
 
 <div class="timer">
-	<h3>{displayTime}</h3>
-	{#if !$running}
+	<h3 class:finish={!$running && $elapsedTime > 0}>{displayTime}</h3>
+	{#if !$running && $elapsedTime === 0}
 		<div class="seconds" transition:fade>
-			<button class:active={countDown === 30} on:click={() => setCountDown(30)}>30</button>
-			<button class:active={countDown === 60} on:click={() => setCountDown(60)}>60</button>
-			<button class:active={countDown === 90} on:click={() => setCountDown(90)}>90</button>
-			<button class:active={countDown === 120} on:click={() => setCountDown(120)}>120</button>
+			<button
+				class:active={countDown === 30}
+				on:click|preventDefault={() => setCountDown(30)}
+				on:mousedown|preventDefault>30</button
+			>
+			<button
+				class:active={countDown === 60}
+				on:click|preventDefault={() => setCountDown(60)}
+				on:mousedown|preventDefault>60</button
+			>
+			<button
+				class:active={countDown === 90}
+				on:click|preventDefault={() => setCountDown(90)}
+				on:mousedown|preventDefault>90</button
+			>
+			<button
+				class:active={countDown === 120}
+				on:click|preventDefault={() => setCountDown(120)}
+				on:mousedown|preventDefault>120</button
+			>
 			<span>'</span>
 		</div>
 	{/if}
@@ -58,9 +75,17 @@
 
 <style>
 	h3 {
-		font-size: 2rem;
+		font-size: 3rem;
 		font-weight: bold;
 		text-align: center;
+		color: var(--theme-blue-200);
+		opacity: 1;
+		transition: color 500ms ease, opacity 500ms ease;
+	}
+
+	h3.finish {
+		color: var(--theme-orange-100);
+		opacity: 0.2;
 	}
 
 	button {

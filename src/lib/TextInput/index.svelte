@@ -152,12 +152,13 @@
 		running.set(false);
 		dispatch('reset');
 		$sentences = makeSentences();
-		inputElement.focus();
 		activeSentence = 0;
 		activeWord = 0;
 		activeLetter = 0;
 		setCurrentElement();
 		setCaret();
+		inputElement.disabled = false;
+		inputElement.focus();
 	}
 
 	export function timeUp() {
@@ -165,6 +166,8 @@
 		if ($running) {
 			running.set(false);
 		}
+		inputElement.disabled = true;
+		sentencesElement.classList.add('blurred');
 	}
 
 	onMount(() => {

@@ -47,4 +47,8 @@
 	.timer {
 		margin-top: 3rem;
 	}
+
+	.score {
+		margin-top: 3rem;
+	}
 </style>

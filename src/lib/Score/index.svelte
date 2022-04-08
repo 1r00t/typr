@@ -3,11 +3,16 @@
 
 	let wpm: number = 0;
 	let accuracy: number = 0;
+	let interval: NodeJS.Timer;
 
 	export function reset() {
+		console.log('sldkjslkdfj');
 		points.set(0);
 		mistakesTotal.set(0);
 		mistakesCorrected.set(0);
+		wpm = 0;
+		accuracy = 0;
+		clearInterval(interval);
 	}
 
 	function getWpm() {
@@ -23,7 +28,6 @@
 	}
 
 	running.subscribe(() => {
-		let interval: NodeJS.Timer;
 		if ($running) {
 			interval = setInterval(() => {
 				wpm = getWpm();
@@ -35,5 +39,41 @@
 	});
 </script>
 
-wpm: {wpm} <br />
-accuracy: {accuracy}%
+<div class="scores" class:finished={!$running && $elapsedTime > 0}>
+	<div class="score">
+		<div class="title">wpm</div>
+		<div class="number">{wpm}</div>
+	</div>
+	<div class="score">
+		<div class="title">acc</div>
+		<div class="number">{accuracy}</div>
+		<div>%</div>
+	</div>
+</div>
+
+<style>
+	.scores {
+		opacity: 0.6;
+		transition: opacity 500ms ease;
+	}
+
+	.scores.finished {
+		opacity: 1;
+	}
+	.score {
+		display: flex;
+		color: var(--theme-blue-200);
+		font-size: 1.5rem;
+		align-items: center;
+	}
+
+	.title {
+		width: 4em;
+	}
+
+	.number {
+		font-size: 2rem;
+		font-weight: bold;
+		margin-right: 0.25rem;
+	}
+</style>
