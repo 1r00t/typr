@@ -5,22 +5,34 @@
 <script lang="ts">
 	import TextInput from '$lib/TextInput/index.svelte';
 	import Timer from '$lib/Timer/index.svelte';
+	import Score from '$lib/Score/index.svelte';
 
 	let timer: Timer;
 	let textInput: TextInput;
-	let running: boolean = false;
+	let score: Score;
 </script>
 
 <svelte:head>
 	<title>typr</title>
 </svelte:head>
 
+<section class="score">
+	<Score bind:this={score} />
+</section>
+
 <section class="timer">
 	<Timer bind:this={timer} countDown={30} on:finish={textInput.timeUp} />
 </section>
 
 <section class="text-input">
-	<TextInput bind:this={textInput} on:start={timer.start} on:reset={timer.reset()} />
+	<TextInput
+		bind:this={textInput}
+		on:start={timer.start}
+		on:reset={() => {
+			timer.reset();
+			score.reset();
+		}}
+	/>
 </section>
 
 <style>

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Timer } from './timer';
 	import { createEventDispatcher } from 'svelte';
-	import { running } from '@/stores';
+	import { running, elapsedTime } from '@/stores';
+	import { fade } from 'svelte/transition';
 
 	const dispatch = createEventDispatcher();
 
@@ -14,23 +15,24 @@
 		console.log('start');
 		timer.start();
 		interval = setInterval(() => {
-			const timeInSeconds = Math.round(timer.getTime() / 1000);
-			currentCountDown = countDown - timeInSeconds;
+			elapsedTime.set(Math.round(timer.getTime() / 1000));
+			currentCountDown = countDown - $elapsedTime;
 			if (currentCountDown <= 0) {
 				clearInterval(interval);
-				currentCountDown = countDown;
+				// currentCountDown = countDown;
 				dispatch('finish');
 			}
 		}, 100);
 	}
 
-	// TODO: there is a bug when resetting the timer with a countDown than the initial.
-
 	export function reset(): any {
 		console.log('reset');
-		timer.reset();
+		if (timer.isRunning) {
+			timer.reset();
+		}
 		clearInterval(interval);
 		currentCountDown = countDown;
+		console.log(currentCountDown, countDown);
 	}
 
 	function setCountDown(newCountDown: number): any {
@@ -44,7 +46,7 @@
 <div class="timer">
 	<h3>{displayTime}</h3>
 	{#if !$running}
-		<div class="seconds">
+		<div class="seconds" transition:fade>
 			<button class:active={countDown === 30} on:click={() => setCountDown(30)}>30</button>
 			<button class:active={countDown === 60} on:click={() => setCountDown(60)}>60</button>
 			<button class:active={countDown === 90} on:click={() => setCountDown(90)}>90</button>

@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	import words from './1000_english_words.json'; // stolen from monkeytype.com
 	import { writable, type Writable } from 'svelte/store';
-	import { running } from '@/stores';
+	import { running, points, mistakesCorrected, mistakesTotal } from '@/stores';
 
 	function getRandomWord(): string {
 		let randomIndex: number = Math.floor(Math.random() * words.length);
@@ -93,8 +93,15 @@
 	function evaluateInput() {
 		if (inputValue === $sentences[activeSentence][activeWord][activeLetter]) {
 			currentElement.classList.add('correct');
+			if (inputValue === inputValue.toUpperCase()) {
+				points.update((points) => points + 2);
+			} else {
+				points.update((points) => points + 1);
+			}
 		} else {
 			currentElement.classList.add('wrong');
+			mistakesTotal.update((mistakes) => mistakes + 1);
+			mistakesCorrected.update((mistakes) => mistakes + 1);
 		}
 	}
 
@@ -109,22 +116,22 @@
 		] as HTMLDivElement;
 	}
 
-	function clearClasses() {
-		Array.from(sentencesElement.children).forEach((sentence) => {
-			Array.from(sentence.children).forEach((word) => {
-				Array.from(word.children).forEach((letter) => {
-					letter.classList.remove('correct');
-					letter.classList.remove('wrong');
-				});
-			});
-		});
-	}
-
 	function backspace() {
 		setPreviousCharacter();
 		setCurrentElement();
-		currentElement.classList.remove('correct');
-		currentElement.classList.remove('wrong');
+		if (currentElement.classList.contains('correct')) {
+			currentElement.classList.remove('correct');
+			if (currentElement.textContent === currentElement.textContent.toUpperCase()) {
+				points.update((points) => points - 2);
+			} else {
+				points.update((points) => points - 1);
+			}
+		} else if (currentElement.classList.contains('wrong')) {
+			currentElement.classList.remove('wrong');
+			mistakesCorrected.update((mistakes) => mistakes - 1);
+		} else {
+			console.error('this should never happen!');
+		}
 		setCaret();
 	}
 
@@ -142,10 +149,8 @@
 	}
 
 	function reset() {
-		if ($running) {
-			running.set(false);
-			dispatch('reset');
-		}
+		running.set(false);
+		dispatch('reset');
 		$sentences = makeSentences();
 		inputElement.focus();
 		activeSentence = 0;
@@ -156,7 +161,10 @@
 	}
 
 	export function timeUp() {
-		reset();
+		console.log('time up');
+		if ($running) {
+			running.set(false);
+		}
 	}
 
 	onMount(() => {
