@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Timer } from './timer';
 	import { createEventDispatcher } from 'svelte';
+	import { running } from '@/stores';
 
 	const dispatch = createEventDispatcher();
 
@@ -32,26 +33,25 @@
 		currentCountDown = countDown;
 	}
 
+	function setCountDown(newCountDown: number): any {
+		countDown = newCountDown;
+		currentCountDown = countDown;
+	}
+
 	$: displayTime = new Date(currentCountDown * 1000).toISOString().substring(14, 19);
 </script>
 
 <div class="timer">
 	<h3>{displayTime}</h3>
-	<div class="seconds">
-		<button class:active={currentCountDown === 30} on:click={() => (currentCountDown = 30)}
-			>30</button
-		>
-		<button class:active={currentCountDown === 60} on:click={() => (currentCountDown = 60)}
-			>60</button
-		>
-		<button class:active={currentCountDown === 90} on:click={() => (currentCountDown = 90)}
-			>90</button
-		>
-		<button class:active={currentCountDown === 120} on:click={() => (currentCountDown = 120)}
-			>120</button
-		>
-		<span>'</span>
-	</div>
+	{#if !$running}
+		<div class="seconds">
+			<button class:active={countDown === 30} on:click={() => setCountDown(30)}>30</button>
+			<button class:active={countDown === 60} on:click={() => setCountDown(60)}>60</button>
+			<button class:active={countDown === 90} on:click={() => setCountDown(90)}>90</button>
+			<button class:active={countDown === 120} on:click={() => setCountDown(120)}>120</button>
+			<span>'</span>
+		</div>
+	{/if}
 </div>
 
 <style>

@@ -8,6 +8,7 @@
 
 	let timer: Timer;
 	let textInput: TextInput;
+	let running: boolean = false;
 </script>
 
 <svelte:head>

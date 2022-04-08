@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
 	import words from './1000_english_words.json'; // stolen from monkeytype.com
 	import { writable, type Writable } from 'svelte/store';
+	import { running } from '@/stores';
 
 	function getRandomWord(): string {
 		let randomIndex: number = Math.floor(Math.random() * words.length);
@@ -47,8 +48,6 @@
 	let caretElement: HTMLDivElement;
 	let outOfFocusElement: HTMLDivElement;
 	// let testLengthElement: HTMLDivElement;
-
-	let running: boolean = false;
 
 	let inputValue: string = '';
 
@@ -130,8 +129,8 @@
 	}
 
 	function letterTyped() {
-		if (!running) {
-			running = true;
+		if (!$running) {
+			running.set(true);
 			dispatch('start');
 		}
 		setCurrentElement();
@@ -143,8 +142,8 @@
 	}
 
 	function reset() {
-		if (running) {
-			running = false;
+		if ($running) {
+			running.set(false);
 			dispatch('reset');
 		}
 		$sentences = makeSentences();
