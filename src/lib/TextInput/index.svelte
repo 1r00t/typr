@@ -93,7 +93,7 @@
 	function evaluateInput() {
 		if (inputValue === $sentences[activeSentence][activeWord][activeLetter]) {
 			currentElement.classList.add('correct');
-			if (inputValue === inputValue.toUpperCase()) {
+			if (inputValue === inputValue.toUpperCase() && inputValue !== ' ') {
 				points.update((points) => points + 2);
 			} else {
 				points.update((points) => points + 1);
