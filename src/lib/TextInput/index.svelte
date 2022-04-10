@@ -121,7 +121,10 @@
 		setCurrentElement();
 		if (currentElement.classList.contains('correct')) {
 			currentElement.classList.remove('correct');
-			if (currentElement.textContent === currentElement.textContent.toUpperCase()) {
+			if (
+				currentElement.textContent === currentElement.textContent.toUpperCase() &&
+				currentElement.textContent !== ' '
+			) {
 				points.update((points) => points - 2);
 			} else {
 				points.update((points) => points - 1);
