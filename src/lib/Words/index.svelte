@@ -26,14 +26,17 @@
 	<span>english</span>
 	<ul>
 		<li>
-			<button class:active={activeWords === 'english_200'} on:click={() => setWords('english_200')}
-				>200</button
+			<button
+				class:active={activeWords === 'english_200'}
+				on:click={() => setWords('english_200')}
+				on:mousedown|preventDefault>200</button
 			>
 		</li>
 		<li>
 			<button
 				class:active={activeWords === 'english_1000'}
-				on:click={() => setWords('english_1000')}>1000</button
+				on:click={() => setWords('english_1000')}
+				on:mousedown|preventDefault>1000</button
 			>
 		</li>
 	</ul>

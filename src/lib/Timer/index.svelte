@@ -47,27 +47,27 @@
 		<div class="seconds" transition:fade>
 			<button
 				class:active={countDown === 15}
-				on:click|preventDefault={() => setCountDown(15)}
+				on:click={() => setCountDown(15)}
 				on:mousedown|preventDefault>15</button
 			>
 			<button
 				class:active={countDown === 30}
-				on:click|preventDefault={() => setCountDown(30)}
+				on:click={() => setCountDown(30)}
 				on:mousedown|preventDefault>30</button
 			>
 			<button
 				class:active={countDown === 60}
-				on:click|preventDefault={() => setCountDown(60)}
+				on:click={() => setCountDown(60)}
 				on:mousedown|preventDefault>60</button
 			>
 			<button
 				class:active={countDown === 90}
-				on:click|preventDefault={() => setCountDown(90)}
+				on:click={() => setCountDown(90)}
 				on:mousedown|preventDefault>90</button
 			>
 			<button
 				class:active={countDown === 120}
-				on:click|preventDefault={() => setCountDown(120)}
+				on:click={() => setCountDown(120)}
 				on:mousedown|preventDefault>120</button
 			>
 			<span>'</span>
