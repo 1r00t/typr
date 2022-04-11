@@ -6,6 +6,7 @@
 	import TextInput from '$lib/TextInput/index.svelte';
 	import Timer from '$lib/Timer/index.svelte';
 	import Score from '$lib/Score/index.svelte';
+	import Words from '$lib/Words/index.svelte';
 
 	let timer: Timer;
 	let textInput: TextInput;
@@ -16,9 +17,15 @@
 	<title>typr</title>
 </svelte:head>
 
-<section class="score">
-	<Score bind:this={score} />
-</section>
+<div class="score-and-words">
+	<section class="score">
+		<Score bind:this={score} />
+	</section>
+
+	<section>
+		<Words />
+	</section>
+</div>
 
 <section class="timer">
 	<Timer bind:this={timer} countDown={30} on:finish={textInput.timeUp} />
@@ -48,7 +55,11 @@
 		margin-top: 3rem;
 	}
 
-	.score {
+	.score-and-words {
 		margin-top: 3rem;
+		display: flex;
+		/* flex-direction: row; */
+		align-items: center;
+		justify-content: space-between;
 	}
 </style>
