@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import english_1000 from '$lib/Words/words_english_1000.json';
+	import english_200 from '$lib/Words/words_english_200.json';
 </script>
 
 <script lang="ts">
@@ -10,7 +10,7 @@
 
 	// set initial word list
 	import { words } from '@/stores';
-	words.set(english_1000);
+	words.set(english_200);
 
 	let timer: Timer;
 	let textInput: TextInput;
