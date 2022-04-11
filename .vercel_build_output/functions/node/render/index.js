@@ -938,7 +938,7 @@ var init_install_fetch = __esm({
         factory(exports);
       })(commonjsGlobal, function(exports2) {
         const SymbolPolyfill = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? Symbol : (description) => `Symbol(${description})`;
-        function noop3() {
+        function noop4() {
           return void 0;
         }
         function getGlobals() {
@@ -955,7 +955,7 @@ var init_install_fetch = __esm({
         function typeIsObject(x2) {
           return typeof x2 === "object" && x2 !== null || typeof x2 === "function";
         }
-        const rethrowAssertionErrorRejection = noop3;
+        const rethrowAssertionErrorRejection = noop4;
         const originalPromise = Promise;
         const originalPromiseThen = Promise.prototype.then;
         const originalPromiseResolve = Promise.resolve.bind(originalPromise);
@@ -1629,10 +1629,10 @@ var init_install_fetch = __esm({
           [PullSteps](readRequest) {
             const stream = this._controlledReadableByteStream;
             if (this._queueTotalSize > 0) {
-              const entry3 = this._queue.shift();
-              this._queueTotalSize -= entry3.byteLength;
+              const entry4 = this._queue.shift();
+              this._queueTotalSize -= entry4.byteLength;
               ReadableByteStreamControllerHandleQueueDrain(this);
-              const view = new Uint8Array(entry3.buffer, entry3.byteOffset, entry3.byteLength);
+              const view = new Uint8Array(entry4.buffer, entry4.byteOffset, entry4.byteLength);
               readRequest._chunkSteps(view);
               return;
             }
@@ -3164,7 +3164,7 @@ var init_install_fetch = __esm({
                 return newPromise((resolveRead, rejectRead) => {
                   ReadableStreamDefaultReaderRead(reader, {
                     _chunkSteps: (chunk) => {
-                      currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop3);
+                      currentWrite = PerformPromiseThen(WritableStreamDefaultWriterWrite(writer, chunk), void 0, noop4);
                       resolveRead(false);
                     },
                     _closeSteps: () => resolveRead(true),
@@ -3877,10 +3877,10 @@ var init_install_fetch = __esm({
           const readable2 = pair === null || pair === void 0 ? void 0 : pair.readable;
           assertRequiredField(readable2, "readable", "ReadableWritablePair");
           assertReadableStream(readable2, `${context} has member 'readable' that`);
-          const writable2 = pair === null || pair === void 0 ? void 0 : pair.writable;
-          assertRequiredField(writable2, "writable", "ReadableWritablePair");
-          assertWritableStream(writable2, `${context} has member 'writable' that`);
-          return { readable: readable2, writable: writable2 };
+          const writable3 = pair === null || pair === void 0 ? void 0 : pair.writable;
+          assertRequiredField(writable3, "writable", "ReadableWritablePair");
+          assertWritableStream(writable3, `${context} has member 'writable' that`);
+          return { readable: readable2, writable: writable3 };
         }
         class ReadableStream2 {
           constructor(rawUnderlyingSource = {}, rawStrategy = {}) {
@@ -4059,7 +4059,7 @@ var init_install_fetch = __esm({
             reader._readIntoRequests = new SimpleQueue();
           }
           const sourceCancelPromise = stream._readableStreamController[CancelSteps](reason);
-          return transformPromiseWith(sourceCancelPromise, noop3);
+          return transformPromiseWith(sourceCancelPromise, noop4);
         }
         function ReadableStreamClose(stream) {
           stream._state = "closed";
@@ -4458,10 +4458,10 @@ var init_install_fetch = __esm({
           if (stream._backpressure) {
             const backpressureChangePromise = stream._backpressureChangePromise;
             return transformPromiseWith(backpressureChangePromise, () => {
-              const writable2 = stream._writable;
-              const state = writable2._state;
+              const writable3 = stream._writable;
+              const state = writable3._state;
               if (state === "erroring") {
-                throw writable2._storedError;
+                throw writable3._storedError;
               }
               return TransformStreamDefaultControllerPerformTransform(controller, chunk);
             });
@@ -5410,7 +5410,9 @@ var init_install_fetch = __esm({
   }
 });
 
-// .svelte-kit/output/server/chunks/index-94f98de0.js
+// .svelte-kit/output/server/chunks/index-f907bc4f.js
+function noop2() {
+}
 function run(fn) {
   return fn();
 }
@@ -5420,6 +5422,33 @@ function blank_object() {
 function run_all(fns) {
   fns.forEach(run);
 }
+function safe_not_equal(a, b) {
+  return a != a ? b == b : a !== b || (a && typeof a === "object" || typeof a === "function");
+}
+function subscribe(store, ...callbacks) {
+  if (store == null) {
+    return noop2;
+  }
+  const unsub = store.subscribe(...callbacks);
+  return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+function compute_rest_props(props, keys) {
+  const rest = {};
+  keys = new Set(keys);
+  for (const k in props)
+    if (!keys.has(k) && k[0] !== "$")
+      rest[k] = props[k];
+  return rest;
+}
+function set_store_value(store, ret, value) {
+  store.set(value);
+  return ret;
+}
+function custom_event(type, detail, bubbles = false) {
+  const e2 = document.createEvent("CustomEvent");
+  e2.initCustomEvent(type, bubbles, false, detail);
+  return e2;
+}
 function set_current_component(component) {
   current_component = component;
 }
@@ -5428,11 +5457,96 @@ function get_current_component() {
     throw new Error("Function called outside component initialization");
   return current_component;
 }
+function createEventDispatcher() {
+  const component = get_current_component();
+  return (type, detail) => {
+    const callbacks = component.$$.callbacks[type];
+    if (callbacks) {
+      const event = custom_event(type, detail);
+      callbacks.slice().forEach((fn) => {
+        fn.call(component, event);
+      });
+    }
+  };
+}
 function setContext(key2, context) {
   get_current_component().$$.context.set(key2, context);
 }
+function spread(args, attrs_to_add) {
+  const attributes = Object.assign({}, ...args);
+  if (attrs_to_add) {
+    const classes_to_add = attrs_to_add.classes;
+    const styles_to_add = attrs_to_add.styles;
+    if (classes_to_add) {
+      if (attributes.class == null) {
+        attributes.class = classes_to_add;
+      } else {
+        attributes.class += " " + classes_to_add;
+      }
+    }
+    if (styles_to_add) {
+      if (attributes.style == null) {
+        attributes.style = style_object_to_string(styles_to_add);
+      } else {
+        attributes.style = style_object_to_string(merge_ssr_styles(attributes.style, styles_to_add));
+      }
+    }
+  }
+  let str = "";
+  Object.keys(attributes).forEach((name) => {
+    if (invalid_attribute_name_character.test(name))
+      return;
+    const value = attributes[name];
+    if (value === true)
+      str += " " + name;
+    else if (boolean_attributes.has(name.toLowerCase())) {
+      if (value)
+        str += " " + name;
+    } else if (value != null) {
+      str += ` ${name}="${value}"`;
+    }
+  });
+  return str;
+}
+function merge_ssr_styles(style_attribute, style_directive) {
+  const style_object = {};
+  for (const individual_style of style_attribute.split(";")) {
+    const colon_index = individual_style.indexOf(":");
+    const name = individual_style.slice(0, colon_index).trim();
+    const value = individual_style.slice(colon_index + 1).trim();
+    if (!name)
+      continue;
+    style_object[name] = value;
+  }
+  for (const name in style_directive) {
+    const value = style_directive[name];
+    if (value) {
+      style_object[name] = value;
+    } else {
+      delete style_object[name];
+    }
+  }
+  return style_object;
+}
 function escape(html) {
   return String(html).replace(/["'&<>]/g, (match) => escaped[match]);
+}
+function escape_attribute_value(value) {
+  return typeof value === "string" ? escape(value) : value;
+}
+function escape_object(obj) {
+  const result = {};
+  for (const key2 in obj) {
+    result[key2] = escape_attribute_value(obj[key2]);
+  }
+  return result;
+}
+function each(items, fn) {
+  let str = "";
+  for (let i2 = 0; i2 < items.length; i2 += 1) {
+    str += fn(items[i2], i2);
+  }
+  return str;
 }
 function validate_component(component, name) {
   if (!component || !component.$$render) {
@@ -5467,7 +5581,7 @@ function create_ssr_component(fn) {
       return {
         html,
         css: {
-          code: Array.from(result.css).map((css4) => css4.code).join("\n"),
+          code: Array.from(result.css).map((css6) => css6.code).join("\n"),
           map: null
         },
         head: result.title + result.head
@@ -5476,10 +5590,46 @@ function create_ssr_component(fn) {
     $$render
   };
 }
-var current_component, escaped, missing_component, on_destroy;
-var init_index_94f98de0 = __esm({
-  ".svelte-kit/output/server/chunks/index-94f98de0.js"() {
+function add_attribute(name, value, boolean) {
+  if (value == null || boolean && !value)
+    return "";
+  const assignment = boolean && value === true ? "" : `="${escape_attribute_value(value.toString())}"`;
+  return ` ${name}${assignment}`;
+}
+function style_object_to_string(style_object) {
+  return Object.keys(style_object).filter((key2) => style_object[key2]).map((key2) => `${key2}: ${style_object[key2]};`).join(" ");
+}
+var current_component, boolean_attributes, invalid_attribute_name_character, escaped, missing_component, on_destroy;
+var init_index_f907bc4f = __esm({
+  ".svelte-kit/output/server/chunks/index-f907bc4f.js"() {
     Promise.resolve();
+    boolean_attributes = /* @__PURE__ */ new Set([
+      "allowfullscreen",
+      "allowpaymentrequest",
+      "async",
+      "autofocus",
+      "autoplay",
+      "checked",
+      "controls",
+      "default",
+      "defer",
+      "disabled",
+      "formnovalidate",
+      "hidden",
+      "ismap",
+      "loop",
+      "multiple",
+      "muted",
+      "nomodule",
+      "novalidate",
+      "open",
+      "playsinline",
+      "readonly",
+      "required",
+      "reversed",
+      "selected"
+    ]);
+    invalid_attribute_name_character = /[\s'">/=\u{FDD0}-\u{FDEF}\u{FFFE}\u{FFFF}\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
     escaped = {
       '"': "&quot;",
       "'": "&#39;",
@@ -5669,7 +5819,7 @@ __export(layout_svelte_exports, {
 var css$1, Header, css, _layout;
 var init_layout_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/__layout.svelte.js"() {
-    init_index_94f98de0();
+    init_index_f907bc4f();
     css$1 = {
       code: "h1.svelte-14mnenk{display:flex;align-items:center;max-width:65rem;height:var(--header-height);margin:0 auto;padding:0 3rem;font-size:3rem;font-weight:700}",
       map: null
@@ -5725,7 +5875,7 @@ function load({ error: error2, status }) {
 var Error2;
 var init_error_svelte = __esm({
   ".svelte-kit/output/server/entries/fallbacks/error.svelte.js"() {
-    init_index_94f98de0();
+    init_index_f907bc4f();
     Error2 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let { status } = $$props;
       let { error: error2 } = $$props;
@@ -5760,6 +5910,1457 @@ var init__2 = __esm({
     entry2 = "error.svelte-855c59a5.js";
     js2 = ["error.svelte-855c59a5.js", "chunks/index-3bd7e975.js"];
     css3 = [];
+  }
+});
+
+// node_modules/@steeze-ui/heroicons/index.js
+var Refresh;
+var init_heroicons = __esm({
+  "node_modules/@steeze-ui/heroicons/index.js"() {
+    Refresh = { "default": { "a": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor", "aria-hidden": "true" }, "path": [{ "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2", "d": "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" }] }, "solid": { "a": { "viewBox": "0 0 20 20", "fill": "currentColor", "aria-hidden": "true" }, "path": [{ "fill-rule": "evenodd", "d": "M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z", "clip-rule": "evenodd" }] } };
+  }
+});
+
+// .svelte-kit/output/server/entries/pages/index.svelte.js
+var index_svelte_exports = {};
+__export(index_svelte_exports, {
+  default: () => Routes
+});
+function writable2(value, start = noop2) {
+  let stop;
+  const subscribers = /* @__PURE__ */ new Set();
+  function set(new_value) {
+    if (safe_not_equal(value, new_value)) {
+      value = new_value;
+      if (stop) {
+        const run_queue = !subscriber_queue2.length;
+        for (const subscriber of subscribers) {
+          subscriber[1]();
+          subscriber_queue2.push(subscriber, value);
+        }
+        if (run_queue) {
+          for (let i2 = 0; i2 < subscriber_queue2.length; i2 += 2) {
+            subscriber_queue2[i2][0](subscriber_queue2[i2 + 1]);
+          }
+          subscriber_queue2.length = 0;
+        }
+      }
+    }
+  }
+  function update(fn) {
+    set(fn(value));
+  }
+  function subscribe2(run2, invalidate = noop2) {
+    const subscriber = [run2, invalidate];
+    subscribers.add(subscriber);
+    if (subscribers.size === 1) {
+      stop = start(set) || noop2;
+    }
+    run2(value);
+    return () => {
+      subscribers.delete(subscriber);
+      if (subscribers.size === 0) {
+        stop();
+        stop = null;
+      }
+    };
+  }
+  return { set, update, subscribe: subscribe2 };
+}
+var english_1000, subscriber_queue2, running, points, mistakesTotal, mistakesCorrected, elapsedTime, words, Icon, css$4, sentences, TextInput, Timer, css$3, Timer_1, css$2, Score, css$12, Words, css4, Routes;
+var init_index_svelte = __esm({
+  ".svelte-kit/output/server/entries/pages/index.svelte.js"() {
+    init_index_f907bc4f();
+    init_heroicons();
+    english_1000 = [
+      "the",
+      "of",
+      "to",
+      "and",
+      "a",
+      "in",
+      "is",
+      "it",
+      "you",
+      "that",
+      "he",
+      "was",
+      "for",
+      "on",
+      "are",
+      "with",
+      "as",
+      "I",
+      "his",
+      "they",
+      "be",
+      "at",
+      "one",
+      "have",
+      "this",
+      "from",
+      "or",
+      "had",
+      "by",
+      "not",
+      "word",
+      "but",
+      "what",
+      "some",
+      "we",
+      "can",
+      "out",
+      "other",
+      "were",
+      "all",
+      "there",
+      "when",
+      "up",
+      "use",
+      "your",
+      "how",
+      "said",
+      "an",
+      "each",
+      "she",
+      "which",
+      "do",
+      "their",
+      "time",
+      "if",
+      "will",
+      "way",
+      "about",
+      "many",
+      "then",
+      "them",
+      "write",
+      "would",
+      "like",
+      "so",
+      "these",
+      "her",
+      "long",
+      "make",
+      "thing",
+      "see",
+      "him",
+      "two",
+      "has",
+      "look",
+      "more",
+      "day",
+      "could",
+      "go",
+      "come",
+      "did",
+      "number",
+      "sound",
+      "no",
+      "most",
+      "people",
+      "my",
+      "over",
+      "know",
+      "water",
+      "than",
+      "call",
+      "first",
+      "who",
+      "may",
+      "down",
+      "side",
+      "been",
+      "now",
+      "find",
+      "any",
+      "new",
+      "work",
+      "part",
+      "take",
+      "get",
+      "place",
+      "made",
+      "live",
+      "where",
+      "after",
+      "back",
+      "little",
+      "only",
+      "round",
+      "man",
+      "year",
+      "came",
+      "show",
+      "every",
+      "good",
+      "me",
+      "give",
+      "our",
+      "under",
+      "name",
+      "very",
+      "through",
+      "just",
+      "form",
+      "sentence",
+      "great",
+      "think",
+      "say",
+      "help",
+      "low",
+      "line",
+      "differ",
+      "turn",
+      "cause",
+      "much",
+      "mean",
+      "before",
+      "move",
+      "right",
+      "boy",
+      "old",
+      "too",
+      "same",
+      "tell",
+      "does",
+      "set",
+      "three",
+      "want",
+      "air",
+      "well",
+      "also",
+      "play",
+      "small",
+      "end",
+      "put",
+      "home",
+      "read",
+      "hand",
+      "port",
+      "large",
+      "spell",
+      "add",
+      "even",
+      "land",
+      "here",
+      "must",
+      "big",
+      "high",
+      "such",
+      "follow",
+      "act",
+      "why",
+      "ask",
+      "men",
+      "change",
+      "went",
+      "light",
+      "kind",
+      "off",
+      "need",
+      "house",
+      "picture",
+      "try",
+      "us",
+      "again",
+      "animal",
+      "point",
+      "mother",
+      "world",
+      "near",
+      "build",
+      "self",
+      "earth",
+      "father",
+      "head",
+      "stand",
+      "own",
+      "page",
+      "should",
+      "country",
+      "found",
+      "answer",
+      "school",
+      "grow",
+      "study",
+      "still",
+      "learn",
+      "plant",
+      "cover",
+      "food",
+      "sun",
+      "four",
+      "between",
+      "state",
+      "keep",
+      "eye",
+      "never",
+      "last",
+      "let",
+      "thought",
+      "city",
+      "tree",
+      "cross",
+      "farm",
+      "hard",
+      "start",
+      "might",
+      "story",
+      "saw",
+      "far",
+      "sea",
+      "draw",
+      "left",
+      "late",
+      "run",
+      "don't",
+      "while",
+      "press",
+      "close",
+      "night",
+      "real",
+      "life",
+      "few",
+      "north",
+      "open",
+      "seem",
+      "together",
+      "next",
+      "white",
+      "children",
+      "begin",
+      "got",
+      "walk",
+      "example",
+      "ease",
+      "paper",
+      "group",
+      "always",
+      "music",
+      "those",
+      "both",
+      "mark",
+      "often",
+      "letter",
+      "until",
+      "mile",
+      "river",
+      "car",
+      "feet",
+      "care",
+      "second",
+      "book",
+      "carry",
+      "took",
+      "science",
+      "eat",
+      "room",
+      "friend",
+      "began",
+      "idea",
+      "fish",
+      "mountain",
+      "stop",
+      "once",
+      "base",
+      "hear",
+      "horse",
+      "cut",
+      "sure",
+      "watch",
+      "color",
+      "face",
+      "wood",
+      "main",
+      "enough",
+      "plain",
+      "girl",
+      "usual",
+      "young",
+      "ready",
+      "above",
+      "ever",
+      "red",
+      "list",
+      "though",
+      "feel",
+      "talk",
+      "bird",
+      "soon",
+      "body",
+      "dog",
+      "family",
+      "direct",
+      "pose",
+      "leave",
+      "song",
+      "measure",
+      "door",
+      "product",
+      "black",
+      "short",
+      "numeral",
+      "class",
+      "wind",
+      "question",
+      "happen",
+      "complete",
+      "ship",
+      "area",
+      "half",
+      "rock",
+      "order",
+      "fire",
+      "south",
+      "problem",
+      "piece",
+      "told",
+      "knew",
+      "pass",
+      "since",
+      "top",
+      "whole",
+      "king",
+      "space",
+      "heard",
+      "best",
+      "hour",
+      "better",
+      "true",
+      "during",
+      "hundred",
+      "five",
+      "remember",
+      "step",
+      "early",
+      "hold",
+      "west",
+      "ground",
+      "interest",
+      "reach",
+      "fast",
+      "verb",
+      "sing",
+      "listen",
+      "six",
+      "table",
+      "travel",
+      "less",
+      "morning",
+      "ten",
+      "simple",
+      "several",
+      "vowel",
+      "toward",
+      "war",
+      "lay",
+      "against",
+      "pattern",
+      "slow",
+      "center",
+      "love",
+      "person",
+      "money",
+      "serve",
+      "appear",
+      "road",
+      "map",
+      "rain",
+      "rule",
+      "govern",
+      "pull",
+      "cold",
+      "notice",
+      "voice",
+      "unit",
+      "power",
+      "town",
+      "fine",
+      "certain",
+      "fly",
+      "fall",
+      "lead",
+      "cry",
+      "dark",
+      "machine",
+      "note",
+      "wait",
+      "plan",
+      "figure",
+      "star",
+      "box",
+      "noun",
+      "field",
+      "rest",
+      "correct",
+      "able",
+      "pound",
+      "done",
+      "beauty",
+      "drive",
+      "stood",
+      "contain",
+      "front",
+      "teach",
+      "week",
+      "final",
+      "gave",
+      "green",
+      "oh",
+      "quick",
+      "develop",
+      "ocean",
+      "warm",
+      "free",
+      "minute",
+      "strong",
+      "special",
+      "mind",
+      "behind",
+      "clear",
+      "tail",
+      "produce",
+      "fact",
+      "street",
+      "inch",
+      "multiply",
+      "nothing",
+      "course",
+      "stay",
+      "wheel",
+      "full",
+      "force",
+      "blue",
+      "object",
+      "decide",
+      "surface",
+      "deep",
+      "moon",
+      "island",
+      "foot",
+      "system",
+      "busy",
+      "test",
+      "record",
+      "boat",
+      "common",
+      "gold",
+      "possible",
+      "plane",
+      "stead",
+      "dry",
+      "wonder",
+      "laugh",
+      "thousand",
+      "ago",
+      "ran",
+      "check",
+      "game",
+      "shape",
+      "equate",
+      "hot",
+      "miss",
+      "brought",
+      "heat",
+      "snow",
+      "tire",
+      "bring",
+      "yes",
+      "distant",
+      "fill",
+      "east",
+      "paint",
+      "language",
+      "among",
+      "grand",
+      "ball",
+      "yet",
+      "wave",
+      "drop",
+      "heart",
+      "am",
+      "present",
+      "heavy",
+      "dance",
+      "engine",
+      "position",
+      "arm",
+      "wide",
+      "sail",
+      "material",
+      "size",
+      "vary",
+      "settle",
+      "speak",
+      "weight",
+      "general",
+      "ice",
+      "matter",
+      "circle",
+      "pair",
+      "include",
+      "divide",
+      "syllable",
+      "felt",
+      "perhaps",
+      "pick",
+      "sudden",
+      "count",
+      "square",
+      "reason",
+      "length",
+      "represent",
+      "art",
+      "subject",
+      "region",
+      "energy",
+      "hunt",
+      "probable",
+      "bed",
+      "brother",
+      "egg",
+      "ride",
+      "cell",
+      "believe",
+      "fraction",
+      "forest",
+      "sit",
+      "race",
+      "window",
+      "store",
+      "summer",
+      "train",
+      "sleep",
+      "prove",
+      "lone",
+      "leg",
+      "exercise",
+      "wall",
+      "catch",
+      "mount",
+      "wish",
+      "sky",
+      "board",
+      "joy",
+      "winter",
+      "sat",
+      "written",
+      "wild",
+      "instrument",
+      "kept",
+      "glass",
+      "grass",
+      "cow",
+      "job",
+      "edge",
+      "sign",
+      "visit",
+      "past",
+      "soft",
+      "fun",
+      "bright",
+      "gas",
+      "weather",
+      "month",
+      "million",
+      "bear",
+      "finish",
+      "happy",
+      "hope",
+      "flower",
+      "clothes",
+      "strange",
+      "gone",
+      "jump",
+      "baby",
+      "eight",
+      "village",
+      "meet",
+      "root",
+      "buy",
+      "raise",
+      "solve",
+      "metal",
+      "whether",
+      "push",
+      "seven",
+      "paragraph",
+      "third",
+      "shall",
+      "held",
+      "hair",
+      "describe",
+      "cook",
+      "floor",
+      "either",
+      "result",
+      "burn",
+      "hill",
+      "safe",
+      "cat",
+      "century",
+      "consider",
+      "type",
+      "law",
+      "bit",
+      "coast",
+      "copy",
+      "phrase",
+      "silent",
+      "tall",
+      "sand",
+      "soil",
+      "roll",
+      "temperature",
+      "finger",
+      "industry",
+      "value",
+      "fight",
+      "lie",
+      "beat",
+      "excite",
+      "natural",
+      "view",
+      "sense",
+      "ear",
+      "else",
+      "quite",
+      "broke",
+      "case",
+      "middle",
+      "kill",
+      "son",
+      "lake",
+      "moment",
+      "scale",
+      "loud",
+      "spring",
+      "observe",
+      "child",
+      "straight",
+      "consonant",
+      "nation",
+      "dictionary",
+      "milk",
+      "speed",
+      "method",
+      "organ",
+      "pay",
+      "age",
+      "section",
+      "dress",
+      "cloud",
+      "surprise",
+      "quiet",
+      "stone",
+      "tiny",
+      "climb",
+      "cool",
+      "design",
+      "poor",
+      "lot",
+      "experiment",
+      "bottom",
+      "key",
+      "iron",
+      "single",
+      "stick",
+      "flat",
+      "twenty",
+      "skin",
+      "smile",
+      "crease",
+      "hole",
+      "trade",
+      "melody",
+      "trip",
+      "office",
+      "receive",
+      "row",
+      "mouth",
+      "exact",
+      "symbol",
+      "die",
+      "least",
+      "trouble",
+      "shout",
+      "except",
+      "wrote",
+      "seed",
+      "tone",
+      "join",
+      "suggest",
+      "clean",
+      "break",
+      "lady",
+      "yard",
+      "rise",
+      "bad",
+      "blow",
+      "oil",
+      "blood",
+      "touch",
+      "grew",
+      "cent",
+      "mix",
+      "team",
+      "wire",
+      "cost",
+      "lost",
+      "brown",
+      "wear",
+      "garden",
+      "equal",
+      "sent",
+      "choose",
+      "fell",
+      "fit",
+      "flow",
+      "fair",
+      "bank",
+      "collect",
+      "save",
+      "control",
+      "decimal",
+      "gentle",
+      "woman",
+      "captain",
+      "practice",
+      "separate",
+      "difficult",
+      "doctor",
+      "please",
+      "protect",
+      "noon",
+      "whose",
+      "locate",
+      "ring",
+      "character",
+      "insect",
+      "caught",
+      "period",
+      "indicate",
+      "radio",
+      "spoke",
+      "atom",
+      "human",
+      "history",
+      "effect",
+      "electric",
+      "expect",
+      "crop",
+      "modern",
+      "element",
+      "hit",
+      "student",
+      "corner",
+      "party",
+      "supply",
+      "bone",
+      "rail",
+      "imagine",
+      "provide",
+      "agree",
+      "thus",
+      "capital",
+      "won't",
+      "chair",
+      "danger",
+      "fruit",
+      "rich",
+      "thick",
+      "soldier",
+      "process",
+      "operate",
+      "guess",
+      "necessary",
+      "sharp",
+      "wing",
+      "create",
+      "neighbor",
+      "wash",
+      "bat",
+      "rather",
+      "crowd",
+      "corn",
+      "compare",
+      "poem",
+      "string",
+      "bell",
+      "depend",
+      "meat",
+      "rub",
+      "tube",
+      "famous",
+      "dollar",
+      "stream",
+      "fear",
+      "sight",
+      "thin",
+      "triangle",
+      "planet",
+      "hurry",
+      "chief",
+      "colony",
+      "clock",
+      "mine",
+      "tie",
+      "enter",
+      "major",
+      "fresh",
+      "search",
+      "send",
+      "yellow",
+      "gun",
+      "allow",
+      "print",
+      "dead",
+      "spot",
+      "desert",
+      "suit",
+      "current",
+      "lift",
+      "rose",
+      "continue",
+      "block",
+      "chart",
+      "hat",
+      "sell",
+      "success",
+      "company",
+      "subtract",
+      "event",
+      "particular",
+      "deal",
+      "swim",
+      "term",
+      "opposite",
+      "wife",
+      "shoe",
+      "shoulder",
+      "spread",
+      "arrange",
+      "camp",
+      "invent",
+      "cotton",
+      "born",
+      "determine",
+      "quart",
+      "nine",
+      "truck",
+      "noise",
+      "level",
+      "chance",
+      "gather",
+      "shop",
+      "stretch",
+      "throw",
+      "shine",
+      "property",
+      "column",
+      "molecule",
+      "select",
+      "wrong",
+      "gray",
+      "repeat",
+      "require",
+      "broad",
+      "prepare",
+      "salt",
+      "nose",
+      "plural",
+      "anger",
+      "claim",
+      "continent",
+      "oxygen",
+      "sugar",
+      "death",
+      "pretty",
+      "skill",
+      "women",
+      "season",
+      "solution",
+      "magnet",
+      "silver",
+      "thank",
+      "branch",
+      "match",
+      "suffix",
+      "especially",
+      "fig",
+      "afraid",
+      "huge",
+      "sister",
+      "steel",
+      "discuss",
+      "forward",
+      "similar",
+      "guide",
+      "experience",
+      "score",
+      "apple",
+      "bought",
+      "led",
+      "pitch",
+      "coat",
+      "mass",
+      "card",
+      "band",
+      "rope",
+      "slip",
+      "win",
+      "dream",
+      "evening",
+      "condition",
+      "feed",
+      "tool",
+      "total",
+      "basic",
+      "smell",
+      "valley",
+      "nor",
+      "double",
+      "seat",
+      "arrive",
+      "master",
+      "track",
+      "parent",
+      "shore",
+      "division",
+      "sheet",
+      "substance",
+      "favor",
+      "connect",
+      "post",
+      "spend",
+      "chord",
+      "fat",
+      "glad",
+      "original",
+      "share",
+      "station",
+      "dad",
+      "bread",
+      "charge",
+      "proper",
+      "bar",
+      "offer",
+      "segment",
+      "duck",
+      "instant",
+      "market",
+      "degree",
+      "populate",
+      "chick",
+      "dear",
+      "enemy",
+      "reply",
+      "drink",
+      "occur",
+      "support",
+      "speech",
+      "nature",
+      "range",
+      "steam",
+      "motion",
+      "path",
+      "liquid",
+      "log",
+      "meant",
+      "quotient",
+      "teeth",
+      "shell",
+      "neck"
+    ];
+    subscriber_queue2 = [];
+    running = writable2(false);
+    points = writable2(0);
+    mistakesTotal = writable2(0);
+    mistakesCorrected = writable2(0);
+    elapsedTime = writable2(0);
+    words = writable2([]);
+    Icon = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let icon;
+      let $$restProps = compute_rest_props($$props, ["src", "size", "theme"]);
+      let { src } = $$props;
+      let { size = "100%" } = $$props;
+      let { theme = "default" } = $$props;
+      if (size !== "100%") {
+        if (size.slice(-1) != "x" && size.slice(-1) != "m" && size.slice(-1) != "%") {
+          try {
+            size = parseInt(size) + "px";
+          } catch (error2) {
+            size = "100%";
+          }
+        }
+      }
+      if ($$props.src === void 0 && $$bindings.src && src !== void 0)
+        $$bindings.src(src);
+      if ($$props.size === void 0 && $$bindings.size && size !== void 0)
+        $$bindings.size(size);
+      if ($$props.theme === void 0 && $$bindings.theme && theme !== void 0)
+        $$bindings.theme(theme);
+      icon = (src == null ? void 0 : src[theme]) ?? (src == null ? void 0 : src["default"]);
+      return `<svg${spread([
+        escape_object(icon == null ? void 0 : icon.a),
+        { xmlns: "http://www.w3.org/2000/svg" },
+        { width: escape_attribute_value(size) },
+        { height: escape_attribute_value(size) },
+        escape_object($$restProps)
+      ], {})}>${each((icon == null ? void 0 : icon.path) ?? [], (a) => {
+        return `<path${spread([escape_object(a)], {})}></path>`;
+      })}${each((icon == null ? void 0 : icon.rect) ?? [], (a) => {
+        return `<rect${spread([escape_object(a)], {})}></rect>`;
+      })}${each((icon == null ? void 0 : icon.circle) ?? [], (a) => {
+        return `<circle${spread([escape_object(a)], {})}></circle>`;
+      })}${each((icon == null ? void 0 : icon.polygon) ?? [], (a) => {
+        return `<polygon${spread([escape_object(a)], {})}></polygon>`;
+      })}${each((icon == null ? void 0 : icon.polyline) ?? [], (a) => {
+        return `<polyline${spread([escape_object(a)], {})}></polyline>`;
+      })}${each((icon == null ? void 0 : icon.line) ?? [], (a) => {
+        return `<line${spread([escape_object(a)], {})}></line>`;
+      })}</svg>`;
+    });
+    css$4 = {
+      code: ".content.svelte-1su61op{display:flex;flex-direction:column;width:100%}.button-refresh.svelte-1su61op{cursor:pointer;display:flex;font-size:1.1rem;font-weight:700;justify-content:center;gap:0.5rem;align-items:center;margin-top:3rem;width:8rem;height:3rem;background-color:transparent;border:none;color:var(--theme-blue-300);border:0.1em solid transparent;border-radius:10px;transition:color 500ms ease, background-color 300ms ease}.button-refresh.svelte-1su61op:focus{outline:none;background-color:var(--theme-blue-300);color:var(--theme-black)}.button-refresh.svelte-1su61op:hover{color:var(--theme-orange-100)}.sentences.svelte-1su61op{display:flex;opacity:0;flex-direction:column;font-size:1.5em;letter-spacing:1px;color:var(--theme-blue-300);position:relative;transition:filter 300ms ease-out, opacity 300ms ease-out}.sentences.svelte-1su61op.blurred{filter:blur(5px)}.sentence.svelte-1su61op{display:flex}.word.svelte-1su61op{display:flex}.letter.svelte-1su61op{transition:color 0ms ease}.space.svelte-1su61op{width:0.4em}.letter.svelte-1su61op.correct{color:var(--theme-orange-100);transition:color 2000ms ease}.letter.svelte-1su61op.wrong{position:relative;color:var(--theme-red-300);white-space:pre;transition:color 500ms ease}.letter.svelte-1su61op.wrong::after{content:'';display:block;position:absolute;bottom:0;left:0;height:2px;width:100%;background-color:var(--theme-red-300)}.caret.svelte-1su61op{position:absolute;height:1.2em;border-right:2px solid var(--theme-white);transition:opacity 500ms ease, left 50ms ease}.sentences-container.svelte-1su61op{position:relative}.out-of-focus.svelte-1su61op{opacity:0;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--theme-blue-100);transition:opacity 0ms ease}.out-of-focus.svelte-1su61op.show{opacity:1;transition:opacity 1000ms ease}",
+      map: null
+    };
+    sentences = writable2([[]]);
+    TextInput = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $sentences, $$unsubscribe_sentences;
+      let $running, $$unsubscribe_running;
+      let $words, $$unsubscribe_words;
+      $$unsubscribe_sentences = subscribe(sentences, (value) => $sentences = value);
+      $$unsubscribe_running = subscribe(running, (value) => $running = value);
+      $$unsubscribe_words = subscribe(words, (value) => $words = value);
+      const dispatch = createEventDispatcher();
+      let activeSentence = 0;
+      let activeWord = 0;
+      let activeLetter = 0;
+      let inputElement;
+      let sentencesElement;
+      let currentElement;
+      let caretElement;
+      let outOfFocusElement;
+      let inputValue = "";
+      let caretLeft = -2;
+      let caretTop = 0;
+      function getRandomWord() {
+        let randomIndex = Math.floor(Math.random() * $words.length);
+        return $words[randomIndex];
+      }
+      function getRandomWords(count) {
+        let randomWords = [];
+        for (let i2 = 0; i2 < count; i2++) {
+          randomWords.push(getRandomWord());
+          randomWords.push(" ");
+        }
+        return randomWords;
+      }
+      function makeSentences() {
+        let newSentences = [];
+        for (let i2 = 0; i2 < 3; i2++) {
+          newSentences.push(getRandomWords(10));
+        }
+        return newSentences;
+      }
+      function setCaret() {
+        caretLeft = currentElement.offsetLeft - 2;
+        caretTop = currentElement.offsetTop;
+      }
+      function setCurrentElement() {
+        currentElement = sentencesElement.children[activeSentence].children[activeWord].children[activeLetter];
+      }
+      function reset() {
+        running.set(false);
+        dispatch("reset");
+        set_store_value(sentences, $sentences = makeSentences(), $sentences);
+        activeSentence = 0;
+        activeWord = 0;
+        activeLetter = 0;
+        setCurrentElement();
+        setCaret();
+        inputElement.disabled = false;
+        inputElement.focus();
+      }
+      function timeUp() {
+        if ($running) {
+          running.set(false);
+        }
+        inputElement.disabled = true;
+        sentencesElement.classList.add("blurred");
+      }
+      if ($$props.getRandomWord === void 0 && $$bindings.getRandomWord && getRandomWord !== void 0)
+        $$bindings.getRandomWord(getRandomWord);
+      if ($$props.getRandomWords === void 0 && $$bindings.getRandomWords && getRandomWords !== void 0)
+        $$bindings.getRandomWords(getRandomWords);
+      if ($$props.makeSentences === void 0 && $$bindings.makeSentences && makeSentences !== void 0)
+        $$bindings.makeSentences(makeSentences);
+      if ($$props.reset === void 0 && $$bindings.reset && reset !== void 0)
+        $$bindings.reset(reset);
+      if ($$props.timeUp === void 0 && $$bindings.timeUp && timeUp !== void 0)
+        $$bindings.timeUp(timeUp);
+      $$result.css.add(css$4);
+      $$unsubscribe_sentences();
+      $$unsubscribe_running();
+      $$unsubscribe_words();
+      return `<div class="${"content svelte-1su61op"}">
+	<input type="${"text"}" aria-hidden="${"true"}" style="${"opacity: 0"}"${add_attribute("this", inputElement, 0)}${add_attribute("value", inputValue, 0)}>
+
+	
+	
+
+	
+	<div class="${"sentences-container svelte-1su61op"}"><div class="${"sentences svelte-1su61op"}"${add_attribute("this", sentencesElement, 0)}>${each($sentences, (sentence) => {
+        return `<div class="${"sentence svelte-1su61op"}">${each(sentence, (word) => {
+          return `<span class="${"word svelte-1su61op"}">${each(word, (letter) => {
+            return `<div class="${["letter svelte-1su61op", letter === " " ? "space" : ""].join(" ").trim()}">${escape(letter)}
+								</div>`;
+          })}
+						</span>`;
+        })}
+				</div>`;
+      })}
+			<div class="${"caret svelte-1su61op"}" style="${"left: " + escape(caretLeft) + "px; top: " + escape(caretTop) + "px;"}"${add_attribute("this", caretElement, 0)}></div></div>
+		<div class="${"out-of-focus svelte-1su61op"}"${add_attribute("this", outOfFocusElement, 0)}>Click here to type
+		</div></div>
+
+	
+	<button class="${"button-refresh svelte-1su61op"}">${validate_component(Icon, "Icon").$$render($$result, { src: Refresh, size: "25px" }, {}, {})}
+		restart
+	</button>
+</div>`;
+    });
+    Timer = class {
+      constructor() {
+        this.isRunning = false;
+        this.startTime = 0;
+        this.overallTime = 0;
+      }
+      _getTimeElapsedSinceLastStart() {
+        if (!this.startTime) {
+          return 0;
+        }
+        return Date.now() - this.startTime;
+      }
+      start() {
+        if (this.isRunning) {
+          console.error("Timer is already running");
+        }
+        this.isRunning = true;
+        this.startTime = Date.now();
+      }
+      stop() {
+        if (!this.isRunning) {
+          console.error("Timer is already stopped");
+        }
+        this.isRunning = false;
+        this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
+      }
+      reset() {
+        if (!this.isRunning) {
+          console.error("Timer is already stopped");
+        }
+        this.overallTime = 0;
+        this.isRunning = false;
+        this.startTime = 0;
+      }
+      getTime() {
+        if (!this.startTime) {
+          return 0;
+        }
+        if (this.isRunning) {
+          return this.overallTime + this._getTimeElapsedSinceLastStart();
+        }
+        return this.overallTime;
+      }
+    };
+    css$3 = {
+      code: "h3.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{font-size:3rem;font-weight:bold;text-align:center;color:var(--theme-blue-200);opacity:1;transition:color 500ms ease, opacity 500ms ease}h3.finish.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{color:var(--theme-orange-100);opacity:0.2}button.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{font-size:1rem;background-color:transparent;border:none;color:var(--theme-blue-300);cursor:pointer;transition:color 500ms ease}button.active.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{color:var(--theme-orange-100)}button.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm:hover{color:var(--theme-blue-100)}.seconds.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{color:var(--theme-blue-300)}.timer.svelte-1n9o0sm.svelte-1n9o0sm.svelte-1n9o0sm{display:flex;justify-content:space-between;margin-top:3rem;align-items:center}.timer.svelte-1n9o0sm>.svelte-1n9o0sm+.svelte-1n9o0sm{margin-left:2rem}",
+      map: null
+    };
+    Timer_1 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let displayTime;
+      let $elapsedTime, $$unsubscribe_elapsedTime;
+      let $running, $$unsubscribe_running;
+      $$unsubscribe_elapsedTime = subscribe(elapsedTime, (value) => $elapsedTime = value);
+      $$unsubscribe_running = subscribe(running, (value) => $running = value);
+      const dispatch = createEventDispatcher();
+      const timer = new Timer();
+      let interval;
+      let { countDown = 30 } = $$props;
+      let currentCountDown = countDown;
+      function start() {
+        timer.start();
+        interval = setInterval(() => {
+          elapsedTime.set(Math.round(timer.getTime() / 1e3));
+          currentCountDown = countDown - $elapsedTime;
+          if (currentCountDown <= 0) {
+            clearInterval(interval);
+            dispatch("finish");
+          }
+        }, 100);
+      }
+      function reset() {
+        if (timer.isRunning) {
+          timer.reset();
+        }
+        elapsedTime.set(0);
+        clearInterval(interval);
+        currentCountDown = countDown;
+      }
+      if ($$props.countDown === void 0 && $$bindings.countDown && countDown !== void 0)
+        $$bindings.countDown(countDown);
+      if ($$props.start === void 0 && $$bindings.start && start !== void 0)
+        $$bindings.start(start);
+      if ($$props.reset === void 0 && $$bindings.reset && reset !== void 0)
+        $$bindings.reset(reset);
+      $$result.css.add(css$3);
+      displayTime = new Date(currentCountDown * 1e3).toISOString().substring(14, 19);
+      $$unsubscribe_elapsedTime();
+      $$unsubscribe_running();
+      return `<div class="${"timer svelte-1n9o0sm"}"><h3 class="${["svelte-1n9o0sm", !$running && $elapsedTime > 0 ? "finish" : ""].join(" ").trim()}">${escape(displayTime)}</h3>
+	${!$running && $elapsedTime === 0 ? `<div class="${"seconds svelte-1n9o0sm"}"><button class="${["svelte-1n9o0sm", countDown === 15 ? "active" : ""].join(" ").trim()}">15</button>
+			<button class="${["svelte-1n9o0sm", countDown === 30 ? "active" : ""].join(" ").trim()}">30</button>
+			<button class="${["svelte-1n9o0sm", countDown === 60 ? "active" : ""].join(" ").trim()}">60</button>
+			<button class="${["svelte-1n9o0sm", countDown === 90 ? "active" : ""].join(" ").trim()}">90</button>
+			<button class="${["svelte-1n9o0sm", countDown === 120 ? "active" : ""].join(" ").trim()}">120</button>
+			<span>&#39;</span></div>` : ``}
+</div>`;
+    });
+    css$2 = {
+      code: ".scores.svelte-gsb3a4{opacity:0.6;transition:opacity 500ms ease}.scores.finished.svelte-gsb3a4{opacity:1}.score.svelte-gsb3a4{display:flex;color:var(--theme-blue-200);font-size:1.5rem;align-items:center}.title.svelte-gsb3a4{width:4em}.number.svelte-gsb3a4{font-size:2rem;font-weight:bold;margin-right:0.25rem}",
+      map: null
+    };
+    Score = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $running, $$unsubscribe_running;
+      let $mistakesCorrected, $$unsubscribe_mistakesCorrected;
+      let $points, $$unsubscribe_points;
+      let $elapsedTime, $$unsubscribe_elapsedTime;
+      $$unsubscribe_running = subscribe(running, (value) => $running = value);
+      $$unsubscribe_mistakesCorrected = subscribe(mistakesCorrected, (value) => $mistakesCorrected = value);
+      $$unsubscribe_points = subscribe(points, (value) => $points = value);
+      $$unsubscribe_elapsedTime = subscribe(elapsedTime, (value) => $elapsedTime = value);
+      let wpm = 0;
+      let accuracy = 0;
+      let interval;
+      function reset() {
+        points.set(0);
+        mistakesTotal.set(0);
+        mistakesCorrected.set(0);
+        wpm = 0;
+        accuracy = 0;
+        clearInterval(interval);
+      }
+      function getWpm() {
+        wpm = Math.floor(($points / 5 - $mistakesCorrected) / ($elapsedTime / 60));
+        if (!wpm || wpm === Infinity || wpm < 0)
+          wpm = 0;
+        return wpm;
+      }
+      function getAccuracy() {
+        accuracy = Math.floor($points / ($points + $mistakesCorrected) * 100);
+        if (!accuracy || accuracy === Infinity || accuracy < 0)
+          accuracy = 0;
+        return accuracy;
+      }
+      running.subscribe(() => {
+        if ($running) {
+          interval = setInterval(() => {
+            wpm = getWpm();
+            accuracy = getAccuracy();
+          }, 1e3);
+        } else {
+          clearInterval(interval);
+        }
+      });
+      if ($$props.reset === void 0 && $$bindings.reset && reset !== void 0)
+        $$bindings.reset(reset);
+      $$result.css.add(css$2);
+      $$unsubscribe_running();
+      $$unsubscribe_mistakesCorrected();
+      $$unsubscribe_points();
+      $$unsubscribe_elapsedTime();
+      return `<div class="${["scores svelte-gsb3a4", !$running && $elapsedTime > 0 ? "finished" : ""].join(" ").trim()}"><div class="${"score svelte-gsb3a4"}"><div class="${"title svelte-gsb3a4"}">wpm</div>
+		<div class="${"number svelte-gsb3a4"}">${escape(wpm)}</div></div>
+	<div class="${"score svelte-gsb3a4"}"><div class="${"title svelte-gsb3a4"}">acc</div>
+		<div class="${"number svelte-gsb3a4"}">${escape(accuracy)}</div>
+		<div>%</div></div>
+</div>`;
+    });
+    css$12 = {
+      code: "div.svelte-pbcoa7{display:flex}span.svelte-pbcoa7{color:var(--theme-blue-300);margin-right:0.5rem;opacity:0.5}ul.svelte-pbcoa7{list-style:none;display:flex;gap:0.25rem}button.svelte-pbcoa7{font-size:1rem;background-color:transparent;border:none;color:var(--theme-blue-300);cursor:pointer;transition:color 500ms ease}button.active.svelte-pbcoa7{color:var(--theme-orange-100)}button.svelte-pbcoa7:hover{color:var(--theme-blue-100)}",
+      map: null
+    };
+    Words = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      createEventDispatcher();
+      $$result.css.add(css$12);
+      return `<div class="${"svelte-pbcoa7"}"><span class="${"svelte-pbcoa7"}">english</span>
+	<ul class="${"svelte-pbcoa7"}"><li><button class="${["svelte-pbcoa7", "active"].join(" ").trim()}">200</button></li>
+		<li><button class="${["svelte-pbcoa7", ""].join(" ").trim()}">1000</button></li></ul>
+</div>`;
+    });
+    css4 = {
+      code: ".text-input.svelte-1eyraed{display:flex;flex-direction:column;align-items:start;justify-content:center;margin-top:3rem}.timer.svelte-1eyraed{margin-top:3rem}.score-and-words.svelte-1eyraed{margin-top:3rem;display:flex;align-items:center;justify-content:space-between}",
+      map: null
+    };
+    Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      words.set(english_1000);
+      let timer;
+      let textInput;
+      let score;
+      $$result.css.add(css4);
+      let $$settled;
+      let $$rendered;
+      do {
+        $$settled = true;
+        $$rendered = `${$$result.head += `${$$result.title = `<title>typr</title>`, ""}`, ""}
+
+<div class="${"score-and-words svelte-1eyraed"}"><section class="${"score"}">${validate_component(Score, "Score").$$render($$result, { this: score }, {
+          this: ($$value) => {
+            score = $$value;
+            $$settled = false;
+          }
+        }, {})}</section>
+
+	<section>${validate_component(Words, "Words").$$render($$result, {}, {}, {})}</section></div>
+
+<section class="${"timer svelte-1eyraed"}">${validate_component(Timer_1, "Timer").$$render($$result, { countDown: 30, this: timer }, {
+          this: ($$value) => {
+            timer = $$value;
+            $$settled = false;
+          }
+        }, {})}</section>
+
+<section class="${"text-input svelte-1eyraed"}">${validate_component(TextInput, "TextInput").$$render($$result, { this: textInput }, {
+          this: ($$value) => {
+            textInput = $$value;
+            $$settled = false;
+          }
+        }, {})}
+</section>`;
+      } while (!$$settled);
+      return $$rendered;
+    });
+  }
+});
+
+// .svelte-kit/output/server/nodes/3.js
+var __exports3 = {};
+__export(__exports3, {
+  css: () => css5,
+  entry: () => entry3,
+  js: () => js3,
+  module: () => index_svelte_exports
+});
+var entry3, js3, css5;
+var init__3 = __esm({
+  ".svelte-kit/output/server/nodes/3.js"() {
+    init_index_svelte();
+    entry3 = "pages/index.svelte-8d51dbe8.js";
+    js3 = ["pages/index.svelte-8d51dbe8.js", "chunks/index-3bd7e975.js", "chunks/index-3e977d41.js"];
+    css5 = ["assets/pages/index.svelte-544a0ba4.css"];
   }
 });
 
@@ -5846,7 +7447,7 @@ async function setResponse(res, response) {
 }
 
 // .svelte-kit/output/server/index.js
-init_index_94f98de0();
+init_index_f907bc4f();
 var import_cookie2 = __toESM(require_cookie(), 1);
 init_dist();
 var __accessCheck2 = (obj, member, msg) => {
@@ -6101,12 +7702,12 @@ function devalue(value) {
   }
   walk(value);
   var names = /* @__PURE__ */ new Map();
-  Array.from(counts).filter(function(entry3) {
-    return entry3[1] > 1;
+  Array.from(counts).filter(function(entry4) {
+    return entry4[1] > 1;
   }).sort(function(a, b) {
     return b[1] - a[1];
-  }).forEach(function(entry3, i2) {
-    names.set(entry3[0], getName(i2));
+  }).forEach(function(entry4, i2) {
+    names.set(entry4[0], getName(i2));
   });
   function stringify(thing) {
     if (names.has(thing)) {
@@ -6262,9 +7863,9 @@ function stringifyString(str) {
   result += '"';
   return result;
 }
-function noop2() {
+function noop3() {
 }
-function safe_not_equal(a, b) {
+function safe_not_equal2(a, b) {
   return a != a ? b == b : a !== b || (a && typeof a === "object" || typeof a === "function");
 }
 Promise.resolve();
@@ -6274,11 +7875,11 @@ function readable(value, start) {
     subscribe: writable(value, start).subscribe
   };
 }
-function writable(value, start = noop2) {
+function writable(value, start = noop3) {
   let stop;
   const subscribers = /* @__PURE__ */ new Set();
   function set(new_value) {
-    if (safe_not_equal(value, new_value)) {
+    if (safe_not_equal2(value, new_value)) {
       value = new_value;
       if (stop) {
         const run_queue = !subscriber_queue.length;
@@ -6298,11 +7899,11 @@ function writable(value, start = noop2) {
   function update(fn) {
     set(fn(value));
   }
-  function subscribe(run2, invalidate = noop2) {
+  function subscribe2(run2, invalidate = noop3) {
     const subscriber = [run2, invalidate];
     subscribers.add(subscriber);
     if (subscribers.size === 1) {
-      stop = start(set) || noop2;
+      stop = start(set) || noop3;
     }
     run2(value);
     return () => {
@@ -6313,7 +7914,7 @@ function writable(value, start = noop2) {
       }
     };
   }
-  return { set, update, subscribe };
+  return { set, update, subscribe: subscribe2 };
 }
 function coalesce_to_error(err) {
   return err instanceof Error || err && err.name && err.message ? err : new Error(JSON.stringify(err));
@@ -6453,10 +8054,10 @@ function encode(str) {
   bytes.set(encoded);
   bytes[encoded.length] = 128;
   reverse_endianness(bytes);
-  const words = new Uint32Array(bytes.buffer);
-  words[words.length - 2] = Math.floor(length / 4294967296);
-  words[words.length - 1] = length;
-  return words;
+  const words2 = new Uint32Array(bytes.buffer);
+  words2[words2.length - 2] = Math.floor(length / 4294967296);
+  words2[words2.length - 1] = length;
+  return words2;
 }
 var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split("");
 function base64(bytes) {
@@ -7850,12 +9451,25 @@ var manifest = {
   assets: /* @__PURE__ */ new Set(["favicon.png", "fonts/Quicksand/quicksand-v28-latin-300.woff", "fonts/Quicksand/quicksand-v28-latin-300.woff2", "fonts/Quicksand/quicksand-v28-latin-500.woff", "fonts/Quicksand/quicksand-v28-latin-500.woff2", "fonts/Quicksand/quicksand-v28-latin-600.woff", "fonts/Quicksand/quicksand-v28-latin-600.woff2", "fonts/Quicksand/quicksand-v28-latin-700.woff", "fonts/Quicksand/quicksand-v28-latin-700.woff2", "fonts/Quicksand/quicksand-v28-latin-regular.woff", "fonts/Quicksand/quicksand-v28-latin-regular.woff2", "robots.txt"]),
   mimeTypes: { ".png": "image/png", ".woff": "font/woff", ".woff2": "font/woff2", ".txt": "text/plain" },
   _: {
-    entry: { "file": "start-38f7bdbd.js", "js": ["start-38f7bdbd.js", "chunks/index-3bd7e975.js", "chunks/index-3e977d41.js"], "css": [] },
+    entry: { "file": "start-dbfe3a4d.js", "js": ["start-dbfe3a4d.js", "chunks/index-3bd7e975.js", "chunks/index-3e977d41.js"], "css": [] },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
-      () => Promise.resolve().then(() => (init__2(), __exports2))
+      () => Promise.resolve().then(() => (init__2(), __exports2)),
+      () => Promise.resolve().then(() => (init__3(), __exports3))
     ],
-    routes: [],
+    routes: [
+      {
+        type: "page",
+        id: "",
+        pattern: /^\/$/,
+        names: [],
+        types: [],
+        path: "/",
+        shadow: null,
+        a: [0, 2],
+        b: [1]
+      }
+    ],
     matchers: async () => {
       return {};
     }

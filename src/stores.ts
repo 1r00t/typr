@@ -5,3 +5,4 @@ export const points: Writable<number> = writable(0);
 export const mistakesTotal: Writable<number> = writable(0);
 export const mistakesCorrected: Writable<number> = writable(0);
 export const elapsedTime: Writable<number> = writable(0);
+export const words: Writable<string[]> = writable([]);

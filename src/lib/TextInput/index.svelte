@@ -1,29 +1,6 @@
 <script context="module" lang="ts">
-	import words from './1000_english_words.json'; // stolen from monkeytype.com
 	import { writable, type Writable } from 'svelte/store';
-	import { running, points, mistakesCorrected, mistakesTotal } from '@/stores';
-
-	function getRandomWord(): string {
-		let randomIndex: number = Math.floor(Math.random() * words.length);
-		return words[randomIndex];
-	}
-
-	function getRandomWords(count: number): Array<string> {
-		let randomWords: Array<string> = [];
-		for (let i = 0; i < count; i++) {
-			randomWords.push(getRandomWord());
-			randomWords.push(' ');
-		}
-		return randomWords;
-	}
-
-	function makeSentences() {
-		let newSentences: Array<Array<string>> = [];
-		for (let i = 0; i < 3; i++) {
-			newSentences.push(getRandomWords(10));
-		}
-		return newSentences;
-	}
+	import { running, points, mistakesCorrected, mistakesTotal, words } from '@/stores';
 
 	let sentences: Writable<string[][]> = writable([[]]);
 </script>
@@ -53,6 +30,28 @@
 
 	let caretLeft: number = -2;
 	let caretTop: number = 0;
+
+	export function getRandomWord(): string {
+		let randomIndex: number = Math.floor(Math.random() * $words.length);
+		return $words[randomIndex];
+	}
+
+	export function getRandomWords(count: number): Array<string> {
+		let randomWords: Array<string> = [];
+		for (let i = 0; i < count; i++) {
+			randomWords.push(getRandomWord());
+			randomWords.push(' ');
+		}
+		return randomWords;
+	}
+
+	export function makeSentences() {
+		let newSentences: Array<Array<string>> = [];
+		for (let i = 0; i < 3; i++) {
+			newSentences.push(getRandomWords(10));
+		}
+		return newSentences;
+	}
 
 	function setNextCharacter() {
 		activeLetter++;
@@ -151,7 +150,7 @@
 		inputValue = '';
 	}
 
-	function reset() {
+	export function reset() {
 		running.set(false);
 		dispatch('reset');
 		$sentences = makeSentences();
@@ -165,7 +164,6 @@
 	}
 
 	export function timeUp() {
-		console.log('time up');
 		if ($running) {
 			running.set(false);
 		}

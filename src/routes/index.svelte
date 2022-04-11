@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	export const prerender = true;
+	import english_1000 from '$lib/Words/words_english_1000.json';
 </script>
 
 <script lang="ts">
@@ -7,6 +7,10 @@
 	import Timer from '$lib/Timer/index.svelte';
 	import Score from '$lib/Score/index.svelte';
 	import Words from '$lib/Words/index.svelte';
+
+	// set initial word list
+	import { words } from '@/stores';
+	words.set(english_1000);
 
 	let timer: Timer;
 	let textInput: TextInput;
@@ -23,7 +27,13 @@
 	</section>
 
 	<section>
-		<Words />
+		<Words
+			on:wordsChanged={() => {
+				textInput.reset();
+				timer.reset();
+				score.reset();
+			}}
+		/>
 	</section>
 </div>
 

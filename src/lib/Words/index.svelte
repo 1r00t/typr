@@ -1,10 +1,72 @@
+<script context="module">
+	import english_1000 from '$lib/Words/words_english_1000.json';
+	import english_200 from '$lib/Words/words_english_200.json';
+	import { words } from '@/stores';
+</script>
+
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
+	let activeWords = 'english_200';
+
+	function setWords(newWords: string): any {
+		if (newWords === 'english_1000') {
+			words.set(english_1000);
+			activeWords = 'english_1000';
+		} else if (newWords === 'english_200') {
+			words.set(english_200);
+			activeWords = 'english_200';
+		}
+		dispatch('wordsChanged');
+	}
 </script>
 
 <div>
-	<span> words </span>
+	<span>english</span>
 	<ul>
-		<li><button>1000</button></li>
-		<li><button>100</button></li>
+		<li>
+			<button class:active={activeWords === 'english_200'} on:click={() => setWords('english_200')}
+				>200</button
+			>
+		</li>
+		<li>
+			<button
+				class:active={activeWords === 'english_1000'}
+				on:click={() => setWords('english_1000')}>1000</button
+			>
+		</li>
 	</ul>
 </div>
+
+<style>
+	div {
+		display: flex;
+	}
+	span {
+		color: var(--theme-blue-300);
+		margin-right: 0.5rem;
+		opacity: 0.5;
+	}
+	ul {
+		list-style: none;
+		display: flex;
+		gap: 0.25rem;
+	}
+	button {
+		font-size: 1rem;
+		background-color: transparent;
+		border: none;
+		color: var(--theme-blue-300);
+		cursor: pointer;
+		transition: color 500ms ease;
+	}
+
+	button.active {
+		color: var(--theme-orange-100);
+	}
+
+	button:hover {
+		color: var(--theme-blue-100);
+	}
+</style>

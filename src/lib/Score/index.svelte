@@ -6,7 +6,6 @@
 	let interval: NodeJS.Timer;
 
 	export function reset() {
-		console.log('sldkjslkdfj');
 		points.set(0);
 		mistakesTotal.set(0);
 		mistakesCorrected.set(0);
