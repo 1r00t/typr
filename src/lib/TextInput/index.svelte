@@ -31,7 +31,7 @@
 	let caretLeft: number = -2;
 	let caretTop: number = 0;
 
-	let maxSentencesWidth = 600;
+	let maxSentencesWidth = 0;
 
 	function getRandomWord(): string {
 		let randomIndex: number = Math.floor(Math.random() * $words.length);
@@ -123,6 +123,9 @@
 	}
 
 	function backspace() {
+		if (!$running) {
+			dispatch('start');
+		}
 		setPreviousCharacter();
 		setCurrentElement();
 		if (currentElement.classList.contains('correct')) {
@@ -184,11 +187,10 @@
 	}
 
 	export function timeUp() {
-		if ($running) {
-			running.set(false);
-		}
+		running.set(false);
 		inputElement.disabled = true;
 		sentencesElement.classList.add('blurred');
+		inputElement.blur();
 	}
 
 	onMount(() => {
