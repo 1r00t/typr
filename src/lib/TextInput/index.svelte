@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import { writable, type Writable } from 'svelte/store';
-	import { running, points, mistakesCorrected, mistakesTotal, words } from '@/stores';
+	import { running, points, mistakesCorrected, mistakesTotal, words, elapsedTime } from '@/stores';
 
 	let sentences: Writable<string[][]> = writable([[]]);
 </script>
@@ -33,7 +33,7 @@
 
 	let maxSentencesWidth = 600;
 
-	export function getRandomWord(): string {
+	function getRandomWord(): string {
 		let randomIndex: number = Math.floor(Math.random() * $words.length);
 		return $words[randomIndex];
 	}
@@ -53,7 +53,7 @@
 		return sentence;
 	}
 
-	export function makeSentences(n: number): string[][] {
+	function makeSentences(n: number): string[][] {
 		const newSentences: string[][] = [];
 		for (let i = 0; i < n; i++) {
 			newSentences.push(makeSentence());
@@ -146,7 +146,6 @@
 
 	function letterTyped() {
 		if (!$running) {
-			running.set(true);
 			dispatch('start');
 		}
 		setCurrentElement();
@@ -157,8 +156,22 @@
 		inputValue = '';
 	}
 
+	function onBlur() {
+		sentencesElement.classList.add('blurred');
+		outOfFocusElement.classList.add('show');
+		caretElement.style.opacity = '0';
+		if ($running && $elapsedTime > 0) {
+			dispatch('pause');
+		}
+	}
+
+	function onFocus() {
+		sentencesElement.classList.remove('blurred');
+		outOfFocusElement.classList.remove('show');
+		caretElement.style.opacity = '1';
+	}
+
 	export function reset() {
-		running.set(false);
 		dispatch('reset');
 		$sentences = makeSentences(3);
 		activeSentence = 0;
@@ -200,25 +213,14 @@
 				backspace();
 			}
 		}}
-		on:focus={() => {
-			sentencesElement.classList.remove('blurred');
-			outOfFocusElement.classList.remove('show');
-			caretElement.style.opacity = '1';
-		}}
-		on:blur={() => {
-			sentencesElement.classList.add('blurred');
-			outOfFocusElement.classList.add('show');
-			caretElement.style.opacity = '0';
-		}}
+		on:focus={onFocus}
+		on:blur={onBlur}
 		aria-hidden="true"
 		style="opacity: 0"
 	/>
 
 	<!-- hidden sentence length test input -->
 	<div id="test-length" bind:this={testLengthElement} />
-
-	<!-- hidden test length div (https://stackoverflow.com/a/118251) -->
-	<!-- <div id="test-length" bind:this={testLengthElement} /> -->
 
 	<!-- typing area -->
 	<div class="sentences-container">

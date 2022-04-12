@@ -49,6 +49,7 @@
 			timer.reset();
 			score.reset();
 		}}
+		on:pause={timer.pause}
 	/>
 </section>
 
