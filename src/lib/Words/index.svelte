@@ -1,7 +1,8 @@
 <script context="module">
 	import english_1000 from '$lib/Words/words_english_1000.json';
 	import english_200 from '$lib/Words/words_english_200.json';
-	import { words } from '@/stores';
+	import { words, running, elapsedTime } from '@/stores';
+	import { fade } from 'svelte/transition';
 </script>
 
 <script lang="ts">
@@ -22,25 +23,27 @@
 	}
 </script>
 
-<div>
-	<span>english</span>
-	<ul>
-		<li>
-			<button
-				class:active={activeWords === 'english_200'}
-				on:click={() => setWords('english_200')}
-				on:mousedown|preventDefault>200</button
-			>
-		</li>
-		<li>
-			<button
-				class:active={activeWords === 'english_1000'}
-				on:click={() => setWords('english_1000')}
-				on:mousedown|preventDefault>1000</button
-			>
-		</li>
-	</ul>
-</div>
+{#if !$running && $elapsedTime === 0}
+	<div transition:fade>
+		<span>english</span>
+		<ul>
+			<li>
+				<button
+					class:active={activeWords === 'english_200'}
+					on:click={() => setWords('english_200')}
+					on:mousedown|preventDefault>200</button
+				>
+			</li>
+			<li>
+				<button
+					class:active={activeWords === 'english_1000'}
+					on:click={() => setWords('english_1000')}
+					on:mousedown|preventDefault>1000</button
+				>
+			</li>
+		</ul>
+	</div>
+{/if}
 
 <style>
 	div {
