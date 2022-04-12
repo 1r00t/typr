@@ -17,7 +17,8 @@
 <style>
 	.container {
 		min-height: 100vh;
-		max-width: 65rem;
+		max-width: 40rem;
+		/* max-width: 65rem; */
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;

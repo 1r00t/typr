@@ -24,31 +24,39 @@
 	let currentElement: HTMLDivElement;
 	let caretElement: HTMLDivElement;
 	let outOfFocusElement: HTMLDivElement;
-	// let testLengthElement: HTMLDivElement;
+	let testLengthElement: HTMLDivElement;
 
 	let inputValue: string = '';
 
 	let caretLeft: number = -2;
 	let caretTop: number = 0;
 
+	let maxSentencesWidth = 600;
+
 	export function getRandomWord(): string {
 		let randomIndex: number = Math.floor(Math.random() * $words.length);
 		return $words[randomIndex];
 	}
 
-	export function getRandomWords(count: number): Array<string> {
-		let randomWords: Array<string> = [];
-		for (let i = 0; i < count; i++) {
-			randomWords.push(getRandomWord());
-			randomWords.push(' ');
+	function makeSentence(): string[] {
+		const sentence: string[] = [];
+		for (let i = 0; i < 20; i++) {
+			const randomWord: string = getRandomWord();
+			testLengthElement.innerHTML += `${randomWord} `;
+			if (testLengthElement.clientWidth >= maxSentencesWidth) {
+				testLengthElement.innerHTML = '';
+				break;
+			}
+			sentence.push(randomWord);
+			sentence.push(' ');
 		}
-		return randomWords;
+		return sentence;
 	}
 
-	export function makeSentences() {
-		let newSentences: Array<Array<string>> = [];
-		for (let i = 0; i < 3; i++) {
-			newSentences.push(getRandomWords(10));
+	export function makeSentences(n: number): string[][] {
+		const newSentences: string[][] = [];
+		for (let i = 0; i < n; i++) {
+			newSentences.push(makeSentence());
 		}
 		return newSentences;
 	}
@@ -70,8 +78,7 @@
 			activeLetter = 0;
 		}
 		if (activeSentence === 2) {
-			// remove top sentence and add bottom sentence
-			$sentences = [$sentences[1], $sentences[2], getRandomWords(10)];
+			$sentences = [$sentences[1], $sentences[2], makeSentence()];
 			activeSentence = 1;
 		}
 	}
@@ -153,7 +160,7 @@
 	export function reset() {
 		running.set(false);
 		dispatch('reset');
-		$sentences = makeSentences();
+		$sentences = makeSentences(3);
 		activeSentence = 0;
 		activeWord = 0;
 		activeLetter = 0;
@@ -173,15 +180,16 @@
 
 	onMount(() => {
 		inputElement.focus();
-		sentencesElement.style.opacity = '1'; // it somehow refreshes on page load
-		// first add the words to the hidden test-length element and check width
-		// if length exceeds the width of the element, stop adding words
-		$sentences = makeSentences();
+		testLengthElement.style.fontSize = '1.5em';
+		testLengthElement.style.fontFamily = 'Quicksand';
+		sentencesElement.style.opacity = '1';
+		maxSentencesWidth = sentencesElement.clientWidth;
+		$sentences = makeSentences(3);
 	});
 </script>
 
 <div class="content">
-	<!-- hidden input -->
+	<!-- hidden character input -->
 	<input
 		type="text"
 		bind:this={inputElement}
@@ -206,6 +214,9 @@
 		style="opacity: 0"
 	/>
 
+	<!-- hidden sentence length test input -->
+	<div id="test-length" bind:this={testLengthElement} />
+
 	<!-- hidden test length div (https://stackoverflow.com/a/118251) -->
 	<!-- <div id="test-length" bind:this={testLengthElement} /> -->
 
@@ -222,8 +233,8 @@
 					{#each sentence as word}
 						<span class="word">
 							{#each word as letter}
-								<div class="letter" class:space={letter === ' '}>
-									{letter}
+								<div class="letter">
+									{#if letter === ' '}&nbsp;{:else}{letter}{/if}
 								</div>
 							{/each}
 						</span>
@@ -243,7 +254,7 @@
 	</div>
 
 	<!-- refresh button -->
-	<button class="button-refresh" on:click={reset}>
+	<button class="button-refresh" on:click={reset} on:mousedown|preventDefault>
 		<Icon src={Reload} size="25px" />
 		restart
 	</button>
@@ -286,7 +297,7 @@
 		opacity: 0;
 		flex-direction: column;
 		font-size: 1.5em;
-		letter-spacing: 1px;
+		/* letter-spacing: 1px; */
 		color: var(--theme-blue-300);
 		position: relative;
 		transition: filter 300ms ease-out, opacity 300ms ease-out;
@@ -302,9 +313,6 @@
 	}
 	.letter {
 		transition: color 0ms ease;
-	}
-	.space {
-		width: 0.4em;
 	}
 	.letter:global(.correct) {
 		color: var(--theme-orange-100);
@@ -349,11 +357,11 @@
 		opacity: 1;
 		transition: opacity 1000ms ease;
 	}
-	/* #test-length {
+	#test-length {
 		position: absolute;
 		visibility: hidden;
 		height: auto;
 		width: auto;
 		white-space: nowrap;
-	} */
+	}
 </style>
