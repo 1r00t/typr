@@ -12,6 +12,7 @@
 	let currentCountDown: number = countDown;
 
 	export function start(): any {
+		running.set(true);
 		timer.start();
 		interval = setInterval(() => {
 			elapsedTime.set(Math.round(timer.getTime() / 1000));
@@ -25,12 +26,17 @@
 	}
 
 	export function reset(): any {
-		if (timer.isRunning) {
-			timer.reset();
-		}
+		running.set(false);
+		timer.reset();
 		elapsedTime.set(0);
 		clearInterval(interval);
 		currentCountDown = countDown;
+	}
+
+	export function pause(): any {
+		running.set(false);
+		timer.stop();
+		clearInterval(interval);
 	}
 
 	function setCountDown(newCountDown: number): any {
