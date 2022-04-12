@@ -8,7 +8,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Icon } from '@steeze-ui/svelte-icon';
-	import { Refresh } from '@steeze-ui/heroicons';
+	import { Reload } from '@steeze-ui/radix-icons';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
@@ -244,7 +244,7 @@
 
 	<!-- refresh button -->
 	<button class="button-refresh" on:click={reset}>
-		<Icon src={Refresh} size="25px" />
+		<Icon src={Reload} size="25px" />
 		restart
 	</button>
 </div>

@@ -1,23 +1,32 @@
 <script lang="ts">
 	import Header from '$lib/Header/index.svelte';
+	import Footer from '$lib/Footer/index.svelte';
 	import '../app.css';
 </script>
 
-<Header />
+<div class="container">
+	<Header />
 
-<main>
-	<slot />
-</main>
+	<main>
+		<slot />
+	</main>
 
-<footer>
-	<p />
-</footer>
+	<Footer />
+</div>
 
 <style>
-	main {
+	.container {
+		min-height: 100vh;
 		max-width: 65rem;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 		padding: 0 3rem;
-		margin-left: auto;
-		margin-right: auto;
+	}
+
+	main {
+		flex: 1;
+		margin-top: 3rem;
 	}
 </style>
