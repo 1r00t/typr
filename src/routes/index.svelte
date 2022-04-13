@@ -15,6 +15,7 @@
 	let timer: Timer;
 	let textInput: TextInput;
 	let score: Score;
+	let countDown: number = 30;
 </script>
 
 <svelte:head>
@@ -38,7 +39,7 @@
 </div>
 
 <section class="timer">
-	<Timer bind:this={timer} countDown={30} on:finish={textInput.timeUp} />
+	<Timer bind:this={timer} {countDown} on:finish={textInput.timeUp} />
 </section>
 
 <section class="text-input">
