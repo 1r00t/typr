@@ -12,6 +12,7 @@
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
+	import { identity } from 'svelte/internal';
 
 	const dispatch = createEventDispatcher();
 
@@ -96,6 +97,25 @@
 		}
 	}
 
+	function setPreviousWord()
+	{
+		if(activeWord == 0)
+		{
+			activeLetter = 0;
+		}
+		if (activeWord > 0) {
+			activeWord--;
+			activeLetter = 0;
+		} 
+		
+		else if (activeSentence > 0) {
+			activeSentence--;
+			activeWord = $sentences[activeSentence].length - 1;
+			activeLetter = 0;
+		}
+	}
+
+
 	function evaluateInput() {
 		if (inputValue === $sentences[activeSentence][activeWord][activeLetter]) {
 			currentElement.classList.add('correct');
@@ -109,6 +129,23 @@
 			mistakesTotal.update((mistakes) => mistakes + 1);
 			mistakesCorrected.update((mistakes) => mistakes + 1);
 		}
+	}
+
+	function evaluateInputWord() {
+		if (inputValue === $sentences[activeSentence][activeWord]) {
+			currentElement.classList.add('correct');
+			if (inputValue === inputValue.toUpperCase() && inputValue !== ' ') {
+				points.update((points) => points + 2);
+			} else {
+				points.update((points) => points + 1);
+			}
+		} else {
+			currentElement.classList.add('wrong');
+			mistakesTotal.update((mistakes) => mistakes + 1);
+			mistakesCorrected.update((mistakes) => mistakes + 1);
+		}
+
+		
 	}
 
 	function setCaret() {
@@ -146,6 +183,36 @@
 		}
 		setCaret();
 	}
+	function ctrlBackspace() {
+		if (!$running) {
+			dispatch('start');
+		}
+		setPreviousWord();
+		setCurrentElement();
+		if (currentElement.classList.contains('correct'))
+		{
+			currentElement.classList.remove('correct');
+			if (currentElement.textContent === currentElement.textContent.toUpperCase() &&
+				currentElement.textContent !== ' ') 
+			{
+				points.update((points) => points - (($sentences[activeSentence][activeWord].length)*2))
+			} else 
+			{
+				points.update((points) => points - ($sentences[activeSentence][activeWord].length));
+			}
+		} 
+		else if (currentElement.classList.contains('wrong')) 
+		{
+			currentElement.classList.remove('wrong');
+			mistakesCorrected.update((mistakes) => mistakes - 1);
+		}
+		 else
+		  {
+			console.error('this should never happen!');
+		}
+		setCaret();
+	}
+
 
 	function letterTyped() {
 		if (!$running) {
@@ -153,6 +220,7 @@
 		}
 		setCurrentElement();
 		evaluateInput();
+		evaluateInputWord();
 		setNextCharacter();
 		setCurrentElement();
 		setCaret();
@@ -213,6 +281,9 @@
 		on:keydown={(e) => {
 			if (e.key === 'Backspace') {
 				backspace();
+			}
+			if (e.key === 'Control') {
+				ctrlBackspace();
 			}
 		}}
 		on:focus={onFocus}
