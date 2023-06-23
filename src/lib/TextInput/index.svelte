@@ -12,20 +12,20 @@
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
-
+	import { each } from 'svelte/internal';
+	// import Keydown from 'svelte-keydown';
 	const dispatch = createEventDispatcher();
 
 	let activeSentence: number = 0;
 	let activeWord: number = 0;
 	let activeLetter: number = 0;
-
 	let inputElement: HTMLInputElement;
 	let sentencesElement: HTMLDivElement;
 	let currentElement: HTMLDivElement;
 	let caretElement: HTMLDivElement;
 	let outOfFocusElement: HTMLDivElement;
 	let testLengthElement: HTMLDivElement;
-
+	
 	let inputValue: string = '';
 
 	let caretLeft: number = -2;
@@ -66,6 +66,7 @@
 		if (activeLetter >= $sentences[activeSentence][activeWord].length) {
 			activeWord++;
 			activeLetter = 0;
+
 		}
 		if (activeWord >= $sentences[activeSentence].length) {
 			activeSentence++;
@@ -81,6 +82,7 @@
 			$sentences = [$sentences[1], $sentences[2], makeSentence()];
 			activeSentence = 1;
 		}
+		console.log(activeSentence, activeWord, activeLetter);
 	}
 
 	function setPreviousCharacter() {
@@ -93,6 +95,23 @@
 			activeSentence--;
 			activeWord = $sentences[activeSentence].length - 1;
 			activeLetter = $sentences[activeSentence][activeWord].length - 1;
+		}
+	}
+
+	function setPreviousWord(){
+		if (activeWord > 0) {
+			activeWord--;
+			activeLetter = 0;
+			
+		} else if(activeWord == 0 && activeSentence > 0){
+			
+			activeLetter = 0;
+		}
+		
+		else if (activeSentence > 0) {
+			activeSentence--;
+			activeWord = $sentences[activeSentence].length - 1;
+			activeLetter = 0;
 		}
 	}
 
@@ -144,6 +163,53 @@
 		} else {
 			console.error('this should never happen!');
 		}
+		setCaret();
+	}
+
+	function ctrl_backspace() {
+		if (!$running) {
+			dispatch('start');
+		}
+		{
+			if(activeWord == 0 && activeSentence == 0){
+				return;
+			}
+			if(currentElement.textContent == ' ') {
+				setPreviousWord();
+				setCurrentElement();
+				setCaret();
+				return;
+			}
+
+			let i = activeLetter-1;
+			if(activeLetter  == 0){
+				i = $sentences[activeSentence][activeWord-1].length-1;
+			}
+			while (i >= 0) {
+				
+				setPreviousCharacter();
+				setCurrentElement();
+				if (currentElement.classList.contains('correct')) {
+					currentElement.classList.remove('correct');
+					if (
+						currentElement.textContent === currentElement.textContent.toUpperCase() &&
+						currentElement.textContent !== ' '
+					) {
+						points.update((points) => points - 2);
+					} else {
+						points.update((points) => points - 1);
+					}
+				} else if (currentElement.classList.contains('wrong')) {
+					currentElement.classList.remove('wrong');
+					mistakesCorrected.update((mistakes) => mistakes - 1);
+				} else {
+					console.error('this should never happen!');
+				}
+				--i;
+
+			}
+		}
+		setCurrentElement();
 		setCaret();
 	}
 
@@ -211,9 +277,13 @@
 		bind:value={inputValue}
 		on:input={letterTyped}
 		on:keydown={(e) => {
-			if (e.key === 'Backspace') {
-				backspace();
+			if (e.ctrlKey && !e.altKey && !e.shiftKey && e.key == 'Backspace') {
+				ctrl_backspace();
 			}
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey && e.key == 'Backspace') {
+			// backspace
+			backspace();
+			}	
 		}}
 		on:focus={onFocus}
 		on:blur={onBlur}
