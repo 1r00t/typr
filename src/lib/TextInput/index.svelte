@@ -13,7 +13,6 @@
 	import { fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 	import { each } from 'svelte/internal';
-	// import Keydown from 'svelte-keydown';
 	const dispatch = createEventDispatcher();
 
 	let activeSentence: number = 0;
@@ -83,6 +82,7 @@
 			activeSentence = 1;
 		}
 		console.log(activeSentence, activeWord, activeLetter);
+		console.log($sentences[activeSentence][activeWord].length);
 	}
 
 	function setPreviousCharacter() {
@@ -95,23 +95,6 @@
 			activeSentence--;
 			activeWord = $sentences[activeSentence].length - 1;
 			activeLetter = $sentences[activeSentence][activeWord].length - 1;
-		}
-	}
-
-	function setPreviousWord(){
-		if (activeWord > 0) {
-			activeWord--;
-			activeLetter = 0;
-			
-		} else if(activeWord == 0 && activeSentence > 0){
-			
-			activeLetter = 0;
-		}
-		
-		else if (activeSentence > 0) {
-			activeSentence--;
-			activeWord = $sentences[activeSentence].length - 1;
-			activeLetter = 0;
 		}
 	}
 
@@ -174,16 +157,14 @@
 			if(activeWord == 0 && activeSentence == 0){
 				return;
 			}
-			if(currentElement.textContent == ' ') {
-				setPreviousWord();
-				setCurrentElement();
-				setCaret();
-				return;
-			}
+			
 
 			let i = activeLetter-1;
 			if(activeLetter  == 0){
 				i = $sentences[activeSentence][activeWord-1].length-1;
+			}
+			if(activeLetter == 0 && ($sentences[activeSentence][activeWord].length == 1)){
+				i = $sentences[activeSentence][activeWord-1].length;
 			}
 			while (i >= 0) {
 				
