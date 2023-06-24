@@ -81,8 +81,6 @@
 			$sentences = [$sentences[1], $sentences[2], makeSentence()];
 			activeSentence = 1;
 		}
-		console.log(activeSentence, activeWord, activeLetter);
-		console.log($sentences[activeSentence][activeWord].length);
 	}
 
 	function setPreviousCharacter() {
@@ -162,9 +160,6 @@
 			let i = activeLetter-1;
 			if(activeLetter  == 0){
 				i = $sentences[activeSentence][activeWord-1].length-1;
-			}
-			if(activeLetter == 0 && ($sentences[activeSentence][activeWord].length == 1)){
-				i = $sentences[activeSentence][activeWord-1].length;
 			}
 			while (i >= 0) {
 				
