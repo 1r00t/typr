@@ -12,20 +12,19 @@
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
-
+	import { each } from 'svelte/internal';
 	const dispatch = createEventDispatcher();
 
 	let activeSentence: number = 0;
 	let activeWord: number = 0;
 	let activeLetter: number = 0;
-
 	let inputElement: HTMLInputElement;
 	let sentencesElement: HTMLDivElement;
 	let currentElement: HTMLDivElement;
 	let caretElement: HTMLDivElement;
 	let outOfFocusElement: HTMLDivElement;
 	let testLengthElement: HTMLDivElement;
-
+	
 	let inputValue: string = '';
 
 	let caretLeft: number = -2;
@@ -66,6 +65,7 @@
 		if (activeLetter >= $sentences[activeSentence][activeWord].length) {
 			activeWord++;
 			activeLetter = 0;
+
 		}
 		if (activeWord >= $sentences[activeSentence].length) {
 			activeSentence++;
@@ -147,6 +147,73 @@
 		setCaret();
 	}
 
+	function ctrl_backspace() {
+		if (!$running) {
+			dispatch('start');
+		}
+		{
+			if(activeWord == 0 && activeSentence == 0){
+				return;
+			}
+			
+
+			let i = activeLetter-1;
+			if(activeLetter  == 0){
+				i = $sentences[activeSentence][activeWord-1].length-1;
+			}
+			while (i >= 0) {
+				
+				setPreviousCharacter();
+				setCurrentElement();
+				if (currentElement.classList.contains('correct')) {
+					currentElement.classList.remove('correct');
+					if (
+						currentElement.textContent === currentElement.textContent.toUpperCase() &&
+						currentElement.textContent !== ' '
+					) {
+						points.update((points) => points - 2);
+					} else {
+						points.update((points) => points - 1);
+					}
+				} else if (currentElement.classList.contains('wrong')) {
+					currentElement.classList.remove('wrong');
+					mistakesCorrected.update((mistakes) => mistakes - 1);
+				} else {
+					console.error('this should never happen!');
+				}
+				--i;
+
+			}
+		}
+		setCurrentElement();
+		setCaret();
+	}
+
+	function space(){
+		if (!$running) {
+			dispatch('start');
+		}
+		setCurrentElement();
+		let i = 0;
+		if(activeLetter!=0)
+		{
+			i = $sentences[activeSentence][activeWord].length-activeLetter;
+			while(i>0){
+				evaluateInput();
+				setNextCharacter();
+				setCurrentElement();
+				setCaret();
+				--i;
+			}
+		}
+		// evaluateInput();
+		// setNextCharacter();
+		// setCurrentElement();
+		// setCaret();
+		inputValue = '';
+	}
+
+
 	function letterTyped() {
 		if (!$running) {
 			dispatch('start');
@@ -211,9 +278,17 @@
 		bind:value={inputValue}
 		on:input={letterTyped}
 		on:keydown={(e) => {
-			if (e.key === 'Backspace') {
-				backspace();
+			if (e.ctrlKey && !e.altKey && !e.shiftKey && e.key == 'Backspace') {
+				ctrl_backspace();
 			}
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey && e.key == 'Backspace') {
+			// backspace
+			backspace();
+			}
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey && e.key == ' ') {
+				// space
+				space();
+			}	
 		}}
 		on:focus={onFocus}
 		on:blur={onBlur}
