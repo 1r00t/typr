@@ -189,6 +189,31 @@
 		setCaret();
 	}
 
+	function space(){
+		if (!$running) {
+			dispatch('start');
+		}
+		setCurrentElement();
+		let i = 0;
+		if(activeLetter!=0)
+		{
+			i = $sentences[activeSentence][activeWord].length-activeLetter;
+			while(i>0){
+				evaluateInput();
+				setNextCharacter();
+				setCurrentElement();
+				setCaret();
+				--i;
+			}
+		}
+		// evaluateInput();
+		// setNextCharacter();
+		// setCurrentElement();
+		// setCaret();
+		inputValue = '';
+	}
+
+
 	function letterTyped() {
 		if (!$running) {
 			dispatch('start');
@@ -259,6 +284,10 @@
 			if (!e.ctrlKey && !e.altKey && !e.shiftKey && e.key == 'Backspace') {
 			// backspace
 			backspace();
+			}
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey && e.key == ' ') {
+				// space
+				space();
 			}	
 		}}
 		on:focus={onFocus}
