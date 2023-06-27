@@ -152,14 +152,13 @@
 			dispatch('start');
 		}
 		{
-			if(activeWord == 0 && activeSentence == 0){
-				return;
-			}
-			
 
 			let i = activeLetter-1;
 			if(activeLetter  == 0){
 				i = $sentences[activeSentence][activeWord-1].length-1;
+			}
+			if(activeWord == 0){
+				i = activeLetter-1;
 			}
 			while (i >= 0) {
 				

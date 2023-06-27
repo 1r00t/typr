@@ -25,7 +25,7 @@
 
 {#if !$running && $elapsedTime === 0}
 	<div transition:fade>
-		<span>english</span>
+		<span>English</span>
 		<ul>
 			<li>
 				<button
