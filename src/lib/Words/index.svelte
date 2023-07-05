@@ -26,6 +26,10 @@
 			words.set(german_200);
 			activeWords = 'german_200';
 		}
+		else if(newWords === 'german_1000'){
+			words.set(german_1000);
+			activeWords = 'german_1000';
+		}
 		dispatch('wordsChanged');
 	}
 </script>
@@ -93,9 +97,13 @@
 		display: flex;
 	}
 	span {
-		color: var(--theme-blue-300);
-		margin-right: 0.5rem;
+		padding: 10%;
+		border-radius: 5px;
+		background-color: var(--theme-blue-300);
+		color: var(--theme-blue-100);
 		opacity: 0.5;
+		margin-right: 1rem;
+		text-underline-offset: 0.25rem;
 	}
 	ul {
 		list-style: none;
