@@ -1,6 +1,8 @@
 <script context="module">
 	import english_1000 from '$lib/Words/words_english_1000.json';
 	import english_200 from '$lib/Words/words_english_200.json';
+	import german_200 from '$lib/Words/words_german_200.json';
+	import german_1000 from '$lib/Words/words_german_1000.json';
 	import { words, running, elapsedTime } from '@/stores';
 	import { fade } from 'svelte/transition';
 </script>
@@ -9,6 +11,7 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
+	let activeLanguage = 'english';
 	let activeWords = 'english_200';
 
 	function setWords(newWords: string): any {
@@ -19,14 +22,36 @@
 			words.set(english_200);
 			activeWords = 'english_200';
 		}
+		else if(newWords === 'german_200'){
+			words.set(german_200);
+			activeWords = 'german_200';
+		}
 		dispatch('wordsChanged');
 	}
 </script>
 
 {#if !$running && $elapsedTime === 0}
 	<div transition:fade>
-		<span>English</span>
 		<ul>
+			<li>
+				<button
+					class:active={activeLanguage === 'german' }
+					on:click={() => {
+						if(activeLanguage==='english'){
+						activeLanguage = 'german';
+						setWords('german_200');
+						}
+						else{
+							activeLanguage = 'english';
+							setWords('english_200');
+						}
+					}}
+					on:mousedown|preventDefault><span>{activeLanguage}</span></button
+				>
+			</li>
+
+		<ul>
+           {#if activeLanguage === 'english'}
 			<li>
 				<button
 					class:active={activeWords === 'english_200'}
@@ -41,6 +66,24 @@
 					on:mousedown|preventDefault>1000</button
 				>
 			</li>
+			{/if}
+			{#if activeLanguage === 'german'}
+			<li>
+				<button
+					class:active={activeWords === 'german_200'}
+					on:click={() => setWords('german_200')}
+					on:mousedown|preventDefault>200</button
+				>
+			</li>	
+			<li>
+				<button
+					class:active={activeWords === 'german_1000'}
+					on:click={() => setWords('german_1000')}
+					on:mousedown|preventDefault>1000</button
+				>
+			</li>
+			{/if}
+
 		</ul>
 	</div>
 {/if}
