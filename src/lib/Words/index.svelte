@@ -96,14 +96,27 @@
 	div {
 		display: flex;
 	}
-	span {
-		padding: 10%;
-		border-radius: 5px;
+		span {
+		cursor: pointer;
+		display: flex;
+		font-size: 1.1rem;
+		font-weight: 500;
+		justify-content: center;
+		gap: 0.5rem;
+		align-items: center;
+		margin-top: -1rem;
+		margin-right: 0.1rem;
+		width: 5rem;
+		height: 2.5rem;
 		background-color: var(--theme-blue-300);
+		border: none;
+		color: var(--theme-black);
+		border: 0.1em solid transparent;
+		border-radius: 10px;
+		transition: color 500ms ease, background-color 300ms ease;
+	}
+	span:hover {
 		color: var(--theme-blue-100);
-		opacity: 0.5;
-		margin-right: 1rem;
-		text-underline-offset: 0.25rem;
 	}
 	ul {
 		list-style: none;
